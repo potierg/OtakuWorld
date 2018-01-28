@@ -70,9 +70,19 @@ app.get('/mangas/details/:id', (req, res) => {
     });
 });
 
+
+app.get('/mangas/site/:site_id/list', (req, res) => {
+    japscan.getMangaList(function(obj) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(obj));
+    });
+});
+
 app.get('/mangas/site/:site_id/search/:nom', (req, res) => {
-    japscan.getMangaList();
-    res.end();
+    japscan.searchManga(req.params.nom, function(obj) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(obj));
+    });
 });
 
 app.get('/mangas/site/:site_id/site_url', (req, res) => {
