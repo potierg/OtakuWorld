@@ -3,6 +3,7 @@
 const express = require('express');
 const httpClient = require('./httpClient');
 
+const ApiEden = require('./apiEden');
 const Japscan = require('./japscan');
 
 // Constants
@@ -14,6 +15,7 @@ const app = express();
 
 const client = new httpClient();
 const japscan = new Japscan();
+const apiEden = new ApiEden();
 
 var listMangas = null;
 
@@ -25,6 +27,28 @@ var listMangas = null;
     MangaReader : 3
 
 */
+
+apiEden.reset(() => { console.log("API END LOAD") });
+japscan.setEden(apiEden);
+japscan.reset(() => { console.log("JAPSCAN END LOAD") });
+
+app.get('/mangas/list/:site_id', (req, res) => {
+    var page = parseInt(req.query.page);
+    var count = parseInt(req.query.count);
+    switch (parseInt(req.params.site_id)) {
+        case 0:
+            japscan.getMangaList(page, count, function (obj) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(obj));
+            });
+            break;
+        default:
+            res.end("END");
+            break;
+    }
+});
+
+
 
 app.get('/mangas', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
@@ -66,20 +90,20 @@ app.get('/mangas/details/:id', (req, res) => {
     client.get('http://www.mangaeden.com/api/manga/' + req.params.id, (ret_raw) => {
         var ret = JSON.parse(ret_raw);
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({id: req.params.id, nom: ret.title, description: ret.description, auteur: ret.author, genre: ret.categories}));
+        res.end(JSON.stringify({ id: req.params.id, nom: ret.title, description: ret.description, auteur: ret.author, genre: ret.categories }));
     });
 });
 
 
 app.get('/mangas/site/:site_id/list', (req, res) => {
-    japscan.getMangaList(function(obj) {
+    japscan.getMangaList(function (obj) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(obj));
     });
 });
 
 app.get('/mangas/site/:site_id/search/:nom', (req, res) => {
-    japscan.searchManga(req.params.nom, function(obj) {
+    japscan.searchManga(req.params.nom, function (obj) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(obj));
     });

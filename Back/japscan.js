@@ -11,20 +11,38 @@ module.exports = class Japscan {
 
     constructor() {
         this.mangaList = null;
+        this.edenList = null;
     }
 
-    getMangaList(callback) {
+    setEden(eden) {
+        this.edenList = eden;
+    }
+
+    reset(callback) {
         var t = this;
+        sniffer.clean();
         sniffer.parseWithLink("http://www.japscan.com/mangas/", function (htmlObject) {
             var listHtml = sniffer.search("div|[id=\"liste_mangas\"]");
             t.mangaList = [];
+            var id = 0;
             for (var elemHtmlKey in listHtml) {
                 var elemHtml = listHtml[elemHtmlKey];
-                if (elemHtml.content[0] !== "class=\"thead\"" && elemHtml.next[0].next[0].value != null)
-                    t.mangaList.push({nom: elemHtml.next[0].next[0].value, url: "http://www.japscan.com" + elemHtml.next[0].next[0].content[0].replace("href=\"", "").replace("\"", "")});
+                if (elemHtml.content[0] !== "class=\"thead\"" && elemHtml.next[0].next[0].value != null) {
+                    var objM = { nom: elemHtml.next[0].next[0].value, url: "http://www.japscan.com" + elemHtml.next[0].next[0].content[0].replace("href=\"", "").replace("\"", "") }
+                    var manga = t.edenList.search(objM.nom);
+                    if (manga != null) {
+                        objM.cover = manga.cover;
+                    }
+                    t.mangaList.push(objM);
+                    id++;
+                }
             }
-            callback(t.mangaList);
-        })
+            callback();
+        });
+    }
+
+    getMangaList(page, count, callback) {
+        callback(this.mangaList.slice(page * count, (count * (page + 1))));
     }
 
     searchManga(searchStr, callback) {
