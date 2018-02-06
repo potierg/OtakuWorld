@@ -28,10 +28,9 @@ module.exports = class ApiEden {
         for (var key in this.mangaList)
         {
             var manga = this.mangaList[key];
-            if (manga.title.toUpperCase() == titreManga.toUpperCase())
+            if (titreManga && manga.title.toUpperCase() == titreManga.toUpperCase())
                 return manga;
         }
         return null;
     }
-
 }

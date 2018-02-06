@@ -3,8 +3,11 @@
 const express = require('express');
 const httpClient = require('./httpClient');
 
-const ApiEden = require('./apiEden');
 const Japscan = require('./japscan');
+const MangaReader = require("./mangareader");
+const ApiEden = require('./apiEden');
+const Mongo = require('./mongo');
+var timeout = require('connect-timeout'); //express v4
 
 // Constants
 const PORT = 8080;
@@ -13,9 +16,19 @@ const HOST = '0.0.0.0';
 // App
 const app = express();
 
+app.use(timeout(1200000));
+app.use(haltOnTimedout);
+
+function haltOnTimedout(req, res, next) {
+    if (!req.timedout) next();
+}
+
+const apiEden = new ApiEden();
+
 const client = new httpClient();
 const japscan = new Japscan();
-const apiEden = new ApiEden();
+const mongo = new Mongo();
+const mangareader = new MangaReader();
 
 var listMangas = null;
 
@@ -28,9 +41,24 @@ var listMangas = null;
 
 */
 
-apiEden.reset(() => { console.log("API END LOAD") });
-japscan.setEden(apiEden);
-japscan.reset(() => { console.log("JAPSCAN END LOAD") });
+//mongo.getAllMangas((docs) => { console.log(docs) });
+//mongo.addManga({manga: {nom:"ma",auteur:"au",annee:"an",genre:["ge1", "ge2", "ge3"]}});
+
+app.get('/run/japscan/mangas', (req, res) => {
+    japscan.setEden(apiEden);
+    japscan.getMangaList(mongo, function (obj) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(obj));
+    });
+});
+
+app.get('/run/mangareader/mangas', (req, res) => {
+    mangareader.getMangaList(mongo, function (obj) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(obj));
+    });
+});
+
 
 app.get('/mangas/list/:site_id', (req, res) => {
     var page = parseInt(req.query.page);
