@@ -14,6 +14,7 @@ const apiEden = new ApiEden();
 const client = new httpClient();
 const japscan = new Japscan();
 const mongo = new Mongo();
+mongo.connect();
 const mangareader = new MangaReader();
 
 var listMangas = null;

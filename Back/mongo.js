@@ -11,14 +11,25 @@ const dbName = 'OtakuWorld';
 
 module.exports = class Mongo {
 
-    exec(callback) {
-        MongoClient.connect(url, function (err, client) {
-            assert.equal(null, err);
-            const db = client.db(dbName);
-            callback(db);
+    constructor() {
+        this.db = null;
+        this.client = null;
+    }
 
-            client.close();
+    connect() {
+        MongoClient.connect(url, (err, client) => {
+            assert.equal(null, err);
+            this.db = client.db(dbName);
+            console.log("Connected successfully to server");
         });
+    }
+
+    disconnect() {
+        this.client.close();
+    }
+
+    exec(callback) {
+        callback(this.db);
     }
 
     getAllMangas(callback) {
@@ -66,14 +77,3 @@ module.exports = class Mongo {
         })
     }
 }
-
-
-// Use connect method to connect to the server
-MongoClient.connect(url, function (err, client) {
-    assert.equal(null, err);
-    console.log("Connected successfully to server");
-
-    const db = client.db(dbName);
-
-    client.close();
-});

@@ -123,7 +123,8 @@ module.exports = class MangaReader {
                     savedManga["Auteur"] = nt["Author"];
                     savedManga["Cover"] = sniffer.search("div|[id=\"bodyust\"")[2].next[0].next[0].next[0].content[0].trim().replace("src=\"", "").replace("\"", "");
 
-                    savedManga.Synopsis.EN = sniffer.search("div|[id=\"readmangasum\"]")[1].value;
+                    if (!savedManga.Synopsis.EN)
+                        savedManga.Synopsis.EN = sniffer.search("div|[id=\"readmangasum\"]")[1].value;
 
                     var listManga = [];
                     var l = sniffer.search("table|[id=\"listing\"]");

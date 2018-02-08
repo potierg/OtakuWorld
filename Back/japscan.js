@@ -83,7 +83,7 @@ module.exports = class Japscan {
                     savedManga['Nom Alternatif'].push(manga.nomFR.toLowerCase());
 
                 var synopsisHtml = sniffer.search("div|[class=\"content\"]{0}");
-                if (synopsisHtml[3] && synopsisHtml[3].value)
+                if (synopsisHtml[3] && synopsisHtml[3].value && !savedManga.Synopsis.FR)
                     savedManga.Synopsis.FR = synopsisHtml[3].value.trim();
 
                 var tableHtml = sniffer.search("div|[class=\"table\"]");
