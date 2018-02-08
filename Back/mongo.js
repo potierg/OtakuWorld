@@ -41,6 +41,31 @@ module.exports = class Mongo {
             collection.insert(manga, cb);
         })
     }
+
+    getMangaByName(nom, callback) {
+        nom = nom.toLowerCase();
+        this.exec((db) => {
+            const collection = db.collection('OtakuWorld');
+            collection.find({$or:[ {'manga.Nom Alternatif':nom}, {'manga.NomFRLow':nom}] }).toArray(function(err, docs) {
+                assert.equal(err, null);
+
+                var manga = null;
+                if (docs.length > 0)
+                    manga = docs[0];
+
+                callback(manga);
+              });
+        })
+    }
+
+    deleteMangaById(id, callback) {
+        this.exec((db) => {
+            const collection = db.collection('OtakuWorld');
+
+            collection.deleteOne({"_id" : id});
+            callback();
+        })
+    }
 }
 
 
