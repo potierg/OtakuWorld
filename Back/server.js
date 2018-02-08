@@ -5,6 +5,7 @@ const httpClient = require('./httpClient');
 
 const Japscan = require('./japscan');
 const MangaReader = require("./mangareader");
+const MangaHere = require("./mangahere");
 const ApiEden = require('./apiEden');
 const Mongo = require('./mongo');
 var timeout = require('connect-timeout'); //express v4
@@ -29,6 +30,7 @@ const client = new httpClient();
 const japscan = new Japscan();
 const mongo = new Mongo();
 const mangareader = new MangaReader();
+const mangahere = new MangaHere();
 
 var listMangas = null;
 
@@ -44,15 +46,22 @@ var listMangas = null;
 //mongo.getAllMangas((docs) => { console.log(docs) });
 //mongo.addManga({manga: {nom:"ma",auteur:"au",annee:"an",genre:["ge1", "ge2", "ge3"]}});
 
-app.get('/run/japscan/mangas', (req, res) => {
+app.get('/run/japscan', (req, res) => {
     japscan.getMangaList(mongo, function (obj) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(obj));
     });
 });
 
-app.get('/run/mangareader/mangas', (req, res) => {
+app.get('/run/mangareader', (req, res) => {
     mangareader.getMangaList(mongo, function (obj) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(obj));
+    });
+});
+
+app.get('/run/mangahere', (req, res) => {
+    mangahere.getMangaList(mongo, function (obj) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(obj));
     });
