@@ -81,7 +81,7 @@ module.exports = class Japscan {
                 for (var k in t[0]) {
                     if (k != 'Genre')
                         if (k == "Nom Alternatif" && savedManga['Nom Alternatif'].indexOf(t[0][k]) == -1) {
-                            savedManga[k].push(t[0][k].toLowerCase());
+                            savedManga[k] = t[0][k].toLowerCase().split(";").map(function(s) { return s.trim() });
                         }
                         else if (!savedManga[k])
                             savedManga[k] = t[0][k];
