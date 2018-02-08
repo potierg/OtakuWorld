@@ -45,7 +45,6 @@ var listMangas = null;
 //mongo.addManga({manga: {nom:"ma",auteur:"au",annee:"an",genre:["ge1", "ge2", "ge3"]}});
 
 app.get('/run/japscan/mangas', (req, res) => {
-    japscan.setEden(apiEden);
     japscan.getMangaList(mongo, function (obj) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(obj));
@@ -56,6 +55,20 @@ app.get('/run/mangareader/mangas', (req, res) => {
     mangareader.getMangaList(mongo, function (obj) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(obj));
+    });
+});
+
+app.get('/exec/bot', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+
+    apiEden.reset(() => {
+        japscan.setEden(apiEden);
+        console.log("API LOAD");
+        japscan.getMangaList(mongo, function (o) {
+            mangareader.getMangaList(mongo, function (obj) {
+                res.end(JSON.stringify("END"));
+            });
+        });
     });
 });
 

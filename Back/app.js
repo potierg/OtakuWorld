@@ -1,14 +1,53 @@
-const http = require('http');
+'use strict';
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const httpClient = require('./httpClient');
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
-});
+const Japscan = require('./japscan');
+const MangaReader = require("./mangareader");
+const ApiEden = require('./apiEden');
+const Mongo = require('./mongo');
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+// App
+
+const apiEden = new ApiEden();
+
+const client = new httpClient();
+const japscan = new Japscan();
+const mongo = new Mongo();
+const mangareader = new MangaReader();
+
+var listMangas = null;
+
+console.log(process.argv[2]);
+
+if (process.argv[2] == 'japscan') {
+  apiEden.reset(() => {
+    japscan.setEden(apiEden);
+    console.log("API LOAD");
+    japscan.getMangaList(mongo, function (o) {
+      console.log("END");
+      return ;
+    });
+  });
+} else if (process.argv[2] == 'mangareader') {
+  apiEden.reset(() => {
+    japscan.setEden(apiEden);
+    console.log("API LOAD");
+    mangareader.getMangaList(mongo, function (obj) {
+      console.log("END");
+      return ;
+    });
+  });
+} else if (process.argv[2] == 'all') {
+  apiEden.reset(() => {
+    japscan.setEden(apiEden);
+    console.log("API LOAD");
+    japscan.getMangaList(mongo, function (o) {
+      mangareader.getMangaList(mongo, function (obj) {
+        console.log("END");
+        return ;
+      });
+    });
+  });
+}
+

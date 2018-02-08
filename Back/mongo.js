@@ -27,7 +27,6 @@ module.exports = class Mongo {
             // Find some documents
             collection.find({}).toArray(function (err, docs) {
                 assert.equal(err, null);
-                console.log("Found the following records");
                 callback(docs);
             });
 
@@ -46,7 +45,7 @@ module.exports = class Mongo {
         nom = nom.toLowerCase();
         this.exec((db) => {
             const collection = db.collection('OtakuWorld');
-            collection.find({$or:[ {'manga.Nom Alternatif':nom}, {'manga.NomFRLow':nom}] }).toArray(function(err, docs) {
+            collection.find({'manga.Nom Alternatif':nom}).toArray(function(err, docs) {
                 assert.equal(err, null);
 
                 var manga = null;
