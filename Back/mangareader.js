@@ -56,110 +56,85 @@ module.exports = class MangaReader {
     }
 
     getOneManga(mongo, worker, manga) {
+        mongo.getMangaByName(manga.nomEn, (info) => {
+            var savedManga = null;
+            var id = 0;
+            if (info) { savedManga = info.manga; id = info._id; }
+            sniffer.clean();
+            sniffer.parseWithLink(manga.url, (htmlObject) => {
 
-        try {
-
-            var isNew = true;
-
-            mongo.getMangaByName(manga.nomEn, (info) => {
-                var savedManga = null;
-                var id = 0;
-                if (info) {
-                    savedManga = info.manga;
-                    id = info._id;
+                if (savedManga == null) {
+                    savedManga = {
+                        Nom: "", Genre: [], 'Nom Alternatif': [], Synopsis: {},
+                        Statut: "", 'Sortie Initial': "", Auteur: "", Cover: "",
+                    }
                 }
 
+                savedManga.Nom = savedManga.nom != "" ? savedManga.nom : manga.nomEn;
 
-                sniffer.clean();
-                sniffer.parseWithLink(manga.url, (htmlObject) => {
+                if (savedManga['Nom Alternatif'].indexOf(manga.nomEn.toLowerCase()) === -1)
+                    savedManga['Nom Alternatif'].push(manga.nomEn.toLowerCase());
 
-                    if (savedManga == null) {
-                        savedManga = {
-                            Nom: "",
-                            Genre: [],
-                            'Nom Alternatif': [],
-                            Synopsis: {},
+
+                let table = sniffer.search("div|[id=\"mangaproperties\"]")[1].next;
+
+                var nt = {};
+                var isg = false;
+                for (var k in table) {
+                    var val = table[k];
+                    var nv = val.next[0].value;
+                    nv = nv.substring(0, nv.length - 1);
+                    if (val.next[1].next && val.next[1].next[0].value)
+                        nt[nv] = val.next[1].next[0].value.trim();
+                    else if (val.next[1] && val.next[1].value)
+                        nt[nv] = val.next[1].value.trim();
+                    else if (val.next[1].next && !isg) {
+                        isg = true;
+                        for (var k2 in val.next[1].next) {
+                            var v2 = val.next[1].next[k2];
+                            if (savedManga["Genre"].indexOf(v2.next[0].value))
+                                savedManga["Genre"].push(v2.next[0].value);
                         }
                     }
+                }
 
-                    if (savedManga.nom == "")
-                        savedManga.Nom = manga.nomEn;
-                    if (savedManga['Nom Alternatif'].indexOf(manga.nomEn.toLowerCase()) === -1)
-                        savedManga['Nom Alternatif'].push(manga.nomEn.toLowerCase());
+                if (nt["Alternate Name"])
+                    nt["Alternate Name"].toLowerCase().split(",").map(function (s) {
+                        if (savedManga["Nom Alternatif"].indexOf(s.trim()) === -1)
+                            savedManga["Nom Alternatif"].push(s.trim())
+                    });
+                savedManga["Sortie Initial"] = savedManga["Sortie Initial"] != "" ? savedManga["Sortie Initial"] : nt["Year of Release"];
+                savedManga["Statut"] = savedManga["Statut"] != "" ? savedManga["Statut"] : nt["Status"];
+                savedManga["Auteur"] = savedManga["Auteur"] != "" ? savedManga["Auteur"] : nt["Author"];
+                savedManga["Cover"] = savedManga["Cover"] != "" ? savedManga["Cover"] : sniffer.search("div|[id=\"bodyust\"")[2].next[0].next[0].next[0].content[0].trim().replace("src=\"", "").replace("\"", "");
+
+                savedManga.Synopsis.EN = savedManga.Synopsis.EN ? savedManga.Synopsis.EN : sniffer.search("div|[id=\"readmangasum\"]")[1].value;
+
+                var listManga = [];
+                var l = sniffer.search("table|[id=\"listing\"]");
 
 
-                    let table = sniffer.search("div|[id=\"mangaproperties\"]")[1].next;
-
-                    var nt = {};
-                    var isg = false;
-                    for (var k in table) {
-                        var val = table[k];
-
-                        var nv = val.next[0].value;
-                        nv = nv.substring(0, nv.length - 1);
-
-                        if (val.next[1].next && val.next[1].next[0].value)
-                            nt[nv] = val.next[1].next[0].value.trim();
-                        else if (val.next[1] && val.next[1].value)
-                            nt[nv] = val.next[1].value.trim();
-                        else if (val.next[1].next && !isg) {
-                            isg = true;
-                            for (var k2 in val.next[1].next) {
-                                var v2 = val.next[1].next[k2];
-
-                                if (savedManga["Genre"].indexOf(v2.next[0].value))
-                                    savedManga["Genre"].push(v2.next[0].value);
-                            }
-                        }
+                for (var k in l) {
+                    if (k > 0) {
+                        var nl = {};
+                        if (l[k].next[0].next[1].value)
+                            nl.numero = l[k].next[0].next[1].value.substring(manga.nomEn.length).match(/\d+/g).map(Number)[0];
+                        if (l[k].next[0].next[1].content[0])
+                            nl.link = "http://www.mangareader.net" + l[k].next[0].next[1].content[0].trim().replace("href=\"", "").replace("\"", "");
+                        if (l[k].next[1].value)
+                            nl.date = l[k].next[1].value
+                        listManga.push(nl);
                     }
+                }
 
-                    if (nt["Alternate Name"])
-                        nt["Alternate Name"].toLowerCase().split(",").map(function (s) {
-                            if (savedManga["Nom Alternatif"].indexOf(s.trim()) === -1)
-                                savedManga["Nom Alternatif"].push(s.trim())
-                        });
-                    savedManga["Sortie Initial"] = nt["Year of Release"];
-                    savedManga["Statut"] = nt["Status"];
-                    savedManga["Auteur"] = nt["Author"];
-                    savedManga["Cover"] = sniffer.search("div|[id=\"bodyust\"")[2].next[0].next[0].next[0].content[0].trim().replace("src=\"", "").replace("\"", "");
+                savedManga.MangaReader = listManga;
 
-                    if (!savedManga.Synopsis.EN)
-                        savedManga.Synopsis.EN = sniffer.search("div|[id=\"readmangasum\"]")[1].value;
-
-                    var listManga = [];
-                    var l = sniffer.search("table|[id=\"listing\"]");
-
-
-                    for (var k in l) {
-                        if (k > 0) {
-                            var nl = {};
-                            if (l[k].next[0].next[1].value)
-                                nl.numero = l[k].next[0].next[1].value.substring(manga.nomEn.length).match(/\d+/g).map(Number)[0];
-
-                            if (l[k].next[0].next[1].content[0])
-                                nl.link = "http://www.mangareader.net" + l[k].next[0].next[1].content[0].trim().replace("href=\"", "").replace("\"", "");
-
-                            if (l[k].next[1].value)
-                                nl.date = l[k].next[1].value
-
-                            listManga.push(nl);
-                        }
-                    }
-
-                    savedManga.MangaReader = listManga;
-
-                    mongo.deleteMangaById(id, () => {
-                        mongo.addManga({ manga: savedManga }, () => {
-                            worker.pop();
-                        });
-                    })
-
+                mongo.deleteMangaById(id, () => {
+                    mongo.addManga({ manga: savedManga }, () => {
+                        worker.pop();
+                    });
                 });
             });
-
-        } catch (error) {
-            console.log("ERROR wait 5 sec and retry");
-            setTimeout(this.getOneManga(mongo, worker, manga), 5000);
-        }
+        });
     }
 }

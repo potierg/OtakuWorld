@@ -17,12 +17,17 @@ module.exports = class MangaHeres {
     getMangaList(mongo, callback) {
         this.babyWorkers = new babyWorkers;
         sniffer.clean();
+        console.log("Recupération de la page list...");
         sniffer.parseWithLink("http://www.mangahere.cc/mangalist/", (htmlObject) => {
+            console.log("Done");
             var l = sniffer.search("div|[class=\"nopic_list clearfix\"]");
+            console.log("Récupération de la liste des mangas");
             var mangaList = this.getListAbc(l[2].next, []);
             mangaList = this.getListAbc(l[3].next, mangaList);
-
+            console.log("Done -> " + mangaList.length + ' Téléchargé');
+            console.log("Get One Manga");
             this.getOneManga(mongo, null, mangaList[0], (o) => {
+                console.log("Done");
                 callback(o);
             });
             return;
@@ -63,7 +68,7 @@ module.exports = class MangaHeres {
 
         var isNew = true;
 
-        mongo.getMangaByName(manga.nomEn, (info) => {
+        mongo.getMangaByName('One Piece', (info) => {
             var savedManga = null;
             var id = 0;
             if (info) {
@@ -75,8 +80,8 @@ module.exports = class MangaHeres {
             sniffer.clean();
             sniffer.parseWithLink("http://www.mangahere.cc/manga/one_piece/", (htmlObject) => {
 
-                callback(sniffer.search("div|[class=\"manga_detail\"]"));
-                return;
+                var datas = sniffer.search("div|[class=\"manga_detail\"]");
+
 
                 if (savedManga == null) {
                     savedManga = {
@@ -89,48 +94,26 @@ module.exports = class MangaHeres {
 
                 if (savedManga.nom == "")
                     savedManga.Nom = manga.nomEn;
-                savedManga.Nom = "One Piece";
+                manga.nomEn = "One Piece";
+
                 if (savedManga['Nom Alternatif'].indexOf(manga.nomEn.toLowerCase()) === -1)
                     savedManga['Nom Alternatif'].push(manga.nomEn.toLowerCase());
 
-
-                let table = sniffer.search("div|[id=\"mangaproperties\"]")[1].next;
-
-                var nt = {};
-                var isg = false;
-                for (var k in table) {
-                    var val = table[k];
-
-                    var nv = val.next[0].value;
-                    nv = nv.substring(0, nv.length - 1);
-
-                    if (val.next[1].next && val.next[1].next[0].value)
-                        nt[nv] = val.next[1].next[0].value.trim();
-                    else if (val.next[1] && val.next[1].value)
-                        nt[nv] = val.next[1].value.trim();
-                    else if (val.next[1].next && !isg) {
-                        isg = true;
-                        for (var k2 in val.next[1].next) {
-                            var v2 = val.next[1].next[k2];
-
-                            if (savedManga["Genre"].indexOf(v2.next[0].value))
-                                savedManga["Genre"].push(v2.next[0].value);
-                        }
-                    }
-                }
-
-                if (nt["Alternate Name"])
-                    nt["Alternate Name"].toLowerCase().split(",").map(function (s) {
+                if (datas[0].next[1].next[2].next[0].str)
+                    decode(datas[0].next[1].next[2].next[0].str).toLowerCase().split(";").map(function (s) {
                         if (savedManga["Nom Alternatif"].indexOf(s.trim()) === -1)
-                            savedManga["Nom Alternatif"].push(s.trim())
+                            savedManga["Nom Alternatif"].push(decode(s.trim()));
                     });
-                savedManga["Sortie Initial"] = nt["Year of Release"];
-                savedManga["Statut"] = nt["Status"];
-                savedManga["Auteur"] = nt["Author"];
-                savedManga["Cover"] = sniffer.search("div|[id=\"bodyust\"")[2].next[0].next[0].next[0].content[0].trim().replace("src=\"", "").replace("\"", "");
 
-                if (!savedManga.Synopsis.EN)
-                    savedManga.Synopsis.EN = sniffer.search("div|[id=\"readmangasum\"]")[1].value;
+                savedManga["Statut"] = savedManga["Statut"] != "" ? savedManga["Statut"] : decode(datas[0].next[1].next[6].next[0].str).trim();
+                savedManga["Auteur"] = savedManga["Auteur"] != "" ? savedManga["Auteur"] : decode(datas[0].next[1].next[4].next[1].value).trim();
+                savedManga["Cover"] = savedManga["Cover"] != "" ? savedManga["Cover"] : decode(datas[0].next[0].content[0].trim().replace("src=\"", "").replace("\"", ""));
+
+                callback(savedManga);
+                return;
+
+                /*if (!savedManga.Synopsis.EN)
+                    savedManga.Synopsis.EN = sniffer.search("div|[id=\"readmangasum\"]")[1].value;*/
 
                 var listManga = [];
                 var l = sniffer.search("table|[id=\"listing\"]");
@@ -152,7 +135,7 @@ module.exports = class MangaHeres {
                     }
                 }
 
-                savedManga.MangaReader = listManga;
+                savedManga.MangaHere = listManga;
 
                 mongo.deleteMangaById(id, () => {
                     mongo.addManga({ manga: savedManga }, () => {

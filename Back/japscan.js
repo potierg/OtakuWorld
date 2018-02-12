@@ -20,7 +20,9 @@ module.exports = class Japscan {
     getMangaList(mongo, callback) {
         this.babyWorkers = new babyWorkers;
         sniffer.clean();
+        console.log("Get Mangas List");
         sniffer.parseWithLink("http://www.japscan.com/mangas/", (htmlObject) => {
+            console.log("Done");
             var listHtml = sniffer.search("div|[id=\"liste_mangas\"]");
             var mangaList = [];
 
@@ -46,7 +48,7 @@ module.exports = class Japscan {
                 callback({});
             });
 
-            return ;
+            return;
         });
     }
 
@@ -65,16 +67,12 @@ module.exports = class Japscan {
 
                 if (savedManga == null) {
                     savedManga = {
-                        Nom: "",
-                        Genre: [],
-                        Statut: manga.statut,
-                        'Nom Alternatif': [],
-                        Synopsis: {},
-                    };
+                        Nom: "", Genre: [], 'Nom Alternatif': [], Synopsis: {},
+                        Statut: manga.statut, 'Sortie Initial': "", Auteur: "", Cover: "",
+                    }
                 }
 
-                if (savedManga.Nom == "")
-                    savedManga.Nom = manga.nomFR;
+                savedManga.Nom = savedManga.Nom != "" ? savedManga.Nom : manga.nomFR;
 
                 if (savedManga.Genre.indexOf(manga.genre.trim()) === -1)
                     savedManga.Genre.push(manga.genre.trim())
@@ -108,7 +106,6 @@ module.exports = class Japscan {
 
                 for (var keyLine in chapsHtml) {
                     var line = chapsHtml[keyLine];
-
                     if (!line.next) {
                         currentTome = {};
                         var info = line.value;
@@ -162,12 +159,7 @@ module.exports = class Japscan {
                     }
                 }
 
-                if (!savedManga.Japscan)
-                    savedManga.Japscan = [];
-
-                if (listTome.length != savedManga.Japscan.length) {
-                    savedManga.Japscan = listTome;
-                }
+                savedManga.Japscan = listTome;
 
                 if (!savedManga.Cover) {
                     var m = this.Eden.search(savedManga.nomFR);
