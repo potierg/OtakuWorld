@@ -16,11 +16,12 @@ module.exports = class Mongo {
         this.client = null;
     }
 
-    connect() {
+    connect(callback) {
         MongoClient.connect(url, (err, client) => {
             assert.equal(null, err);
             this.db = client.db(dbName);
             console.log("Connected successfully to server");
+            callback();
         });
     }
 
@@ -45,10 +46,13 @@ module.exports = class Mongo {
     }
 
     addManga(manga, cb) {
+        console.log("Connect");
         this.exec((db) => {
+            console.log("Done - Insert");
             const collection = db.collection('OtakuWorld');
             // Find some documents
             collection.insert(manga, cb);
+            console.log("Done");
         })
     }
 
@@ -69,10 +73,13 @@ module.exports = class Mongo {
     }
 
     deleteMangaById(id, callback) {
+        console.log("Connect");
         this.exec((db) => {
+            console.log("Done - DELETE");
             const collection = db.collection('OtakuWorld');
 
             collection.deleteOne({"_id" : id});
+            console.log("Done");
             callback();
         })
     }

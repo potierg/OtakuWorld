@@ -13,38 +13,41 @@ const apiEden = new ApiEden();
 
 const client = new httpClient();
 const japscan = new Japscan();
-const mongo = new Mongo();
-mongo.connect();
 const mangareader = new MangaReader();
-
 var listMangas = null;
+const mongo = new Mongo();
 
-console.log(process.argv[2]);
+mongo.connect(() => {
 
-if (process.argv[2] == 'japscan') {
-  apiEden.reset(() => {
-    japscan.setEden(apiEden);
-    console.log("API LOAD");
-    japscan.getMangaList(mongo, function (o) {
-      console.log("END");
-      return ;
-    });
-  });
-} else if (process.argv[2] == 'mangareader') {
-    mangareader.getMangaList(mongo, function (obj) {
-      console.log("END");
-      return ;
-    });
-} else if (process.argv[2] == 'all') {
-  apiEden.reset(() => {
-    japscan.setEden(apiEden);
-    console.log("API LOAD");
-    japscan.getMangaList(mongo, function (o) {
-      mangareader.getMangaList(mongo, function (obj) {
+  console.log(process.argv[2]);
+  
+  if(process.argv[2] == 'japscan') {
+    apiEden.reset(() => {
+      japscan.setEden(apiEden);
+      console.log("API LOAD");
+      japscan.getMangaList(mongo, function (o) {
         console.log("END");
-        return ;
+        return;
       });
     });
-  });
-}
+  } else if (process.argv[2] == 'mangareader') {
+    mangareader.getMangaList(mongo, function (obj) {
+      console.log("END");
+      return;
+    });
+  } else if (process.argv[2] == 'all') {
+    apiEden.reset(() => {
+      japscan.setEden(apiEden);
+      console.log("API LOAD");
+      japscan.getMangaList(mongo, function (o) {
+        mangareader.getMangaList(mongo, function (obj) {
+          console.log("END");
+          return;
+        });
+      });
+    });
+  }
+
+});
+
 
