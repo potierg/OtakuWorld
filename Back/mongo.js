@@ -30,7 +30,11 @@ module.exports = class Mongo {
     }
 
     exec(callback) {
-        callback(this.db);
+        try {
+            callback(this.db);
+        } catch (error) {
+            console.log("ERROR MONGO");
+        }
     }
 
     getAllMangas(callback) {
@@ -46,13 +50,10 @@ module.exports = class Mongo {
     }
 
     addManga(manga, cb) {
-        console.log("Connect");
         this.exec((db) => {
-            console.log("Done - Insert");
             const collection = db.collection('OtakuWorld');
             // Find some documents
             collection.insert(manga, cb);
-            console.log("Done");
         })
     }
 
@@ -60,7 +61,7 @@ module.exports = class Mongo {
         nom = nom.toLowerCase();
         this.exec((db) => {
             const collection = db.collection('OtakuWorld');
-            collection.find({'manga.Nom Alternatif':nom}).toArray(function(err, docs) {
+            collection.find({ 'manga.Nom Alternatif': nom }).toArray(function (err, docs) {
                 assert.equal(err, null);
 
                 var manga = null;
@@ -68,18 +69,15 @@ module.exports = class Mongo {
                     manga = docs[0];
 
                 callback(manga);
-              });
+            });
         })
     }
 
     deleteMangaById(id, callback) {
-        console.log("Connect");
         this.exec((db) => {
-            console.log("Done - DELETE");
             const collection = db.collection('OtakuWorld');
 
-            collection.deleteOne({"_id" : id});
-            console.log("Done");
+            collection.deleteOne({ "_id": id });
             callback();
         })
     }

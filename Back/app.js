@@ -27,13 +27,11 @@ mongo.connect(() => {
       console.log("API LOAD");
       japscan.getMangaList(mongo, function (o) {
         console.log("END");
-        return;
       });
     });
   } else if (process.argv[2] == 'mangareader') {
     mangareader.getMangaList(mongo, function (obj) {
       console.log("END");
-      return;
     });
   } else if (process.argv[2] == 'all') {
     apiEden.reset(() => {
@@ -42,12 +40,8 @@ mongo.connect(() => {
       japscan.getMangaList(mongo, function (o) {
         mangareader.getMangaList(mongo, function (obj) {
           console.log("END");
-          return;
         });
       });
     });
   }
-
 });
-
-

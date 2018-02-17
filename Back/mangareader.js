@@ -29,8 +29,6 @@ module.exports = class MangaReader {
             this.babyWorkers.listMangas.complete(() => {
                 callback({});
             });
-
-            return;
         });
     }
 
@@ -66,11 +64,11 @@ module.exports = class MangaReader {
                 if (savedManga == null) {
                     savedManga = {
                         Nom: "", Genre: [], 'Nom Alternatif': [], Synopsis: {},
-                        Statut: "", 'Sortie Initial': "", Auteur: "", Cover: "",
+                        Statut: "", 'Sortie Initial': "", Auteur: "", Cover: {},
                     }
                 }
 
-                savedManga.Nom = savedManga.nom != "" ? savedManga.nom : manga.nomEn;
+                savedManga.Nom = savedManga.Nom != "" ? savedManga.Nom : manga.nomEn;
 
                 if (savedManga['Nom Alternatif'].indexOf(manga.nomEn.toLowerCase()) === -1)
                     savedManga['Nom Alternatif'].push(manga.nomEn.toLowerCase());
@@ -106,7 +104,9 @@ module.exports = class MangaReader {
                 savedManga["Sortie Initial"] = savedManga["Sortie Initial"] != "" ? savedManga["Sortie Initial"] : nt["Year of Release"];
                 savedManga["Statut"] = savedManga["Statut"] != "" ? savedManga["Statut"] : nt["Status"];
                 savedManga["Auteur"] = savedManga["Auteur"] != "" ? savedManga["Auteur"] : nt["Author"];
-                savedManga["Cover"] = savedManga["Cover"] != "" ? savedManga["Cover"] : sniffer.search("div|[id=\"bodyust\"")[2].next[0].next[0].next[0].content[0].trim().replace("src=\"", "").replace("\"", "");
+
+                if (!savedManga.Cover.mangareader)
+                    savedManga.Cover.mangareader = sniffer.search("div|[id=\"bodyust\"")[2].next[0].next[0].next[0].content[0].trim().replace("src=\"", "").replace("\"", "");
 
                 savedManga.Synopsis.EN = savedManga.Synopsis.EN ? savedManga.Synopsis.EN : sniffer.search("div|[id=\"readmangasum\"]")[1].value;
 

@@ -68,7 +68,7 @@ module.exports = class Japscan {
                 if (savedManga == null) {
                     savedManga = {
                         Nom: "", Genre: [], 'Nom Alternatif': [], Synopsis: {},
-                        Statut: manga.statut, 'Sortie Initial': "", Auteur: "", Cover: "",
+                        Statut: manga.statut, 'Sortie Initial': "", Auteur: "", Cover: {},
                     }
                 }
 
@@ -76,6 +76,9 @@ module.exports = class Japscan {
 
                 if (savedManga.Genre.indexOf(manga.genre.trim()) === -1)
                     savedManga.Genre.push(manga.genre.trim())
+
+                if (savedManga['Nom Alternatif'].indexOf(savedManga.Nom) === -1)
+                    savedManga['Nom Alternatif'].push(savedManga.Nom);
 
                 if (savedManga['Nom Alternatif'].indexOf(manga.nomFR.toLowerCase()) === -1)
                     savedManga['Nom Alternatif'].push(manga.nomFR.toLowerCase());
@@ -161,13 +164,13 @@ module.exports = class Japscan {
 
                 savedManga.Japscan = listTome;
 
-                if (!savedManga.Cover) {
+                if (!savedManga.Cover.eden) {
                     var m = this.Eden.search(savedManga.nomFR);
                     if (!m)
                         m = this.Eden.search(savedManga['Nom Alternatif'][0]);
 
                     if (m != null)
-                        savedManga.Cover = m.cover;
+                        savedManga.Cover.eden = m.cover;
                 }
 
                 mongo.deleteMangaById(id, () => {

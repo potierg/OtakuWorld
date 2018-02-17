@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "async": "^2.6.0",
-    "baby-workers": "^1.0.71",
+    "baby-workers": "^2.0.0",
     "connect-timeout": "^1.9.0",
     "decode-html": "^2.0.0",
     "express": "^4.16.1",
