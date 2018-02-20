@@ -42,7 +42,8 @@ module.exports = class Japscan {
             this.babyWorkers.create('listMangas', (worker, manga) => {
                 console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%');
                 this.getOneManga(mongo, worker, manga);
-            }, mangaList).limit(100).run(); // .stack();
+            }).map(mangaList).limit(100).run() // .stack();
+
 
             this.babyWorkers.listMangas.complete(() => {
                 callback({});

@@ -29,7 +29,6 @@ const apiEden = new ApiEden();
 const client = new httpClient();
 const japscan = new Japscan();
 const mongo = new Mongo();
-mongo.connect();
 const mangareader = new MangaReader();
 const mangahere = new MangaHere();
 
@@ -62,9 +61,11 @@ app.get('/run/mangareader', (req, res) => {
 });
 
 app.get('/run/mangahere', (req, res) => {
-    mangahere.getMangaList(mongo, function (obj) {
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(obj));
+    mongo.connect(() => {
+        mangahere.getMangaList(mongo, function (obj) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(obj));
+        });
     });
 });
 
