@@ -1,10 +1,7 @@
 'use strict';
 
 const webSniffer = require('web-sniffer-js');
-const httpClient = require('./httpClient');
 const babyWorkers = require('baby-workers');
-
-const client = new httpClient();
 const sniffer = new webSniffer;
 
 module.exports = class Japscan {

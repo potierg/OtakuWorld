@@ -24,9 +24,12 @@ module.exports = class MangaHeres {
 
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
-                console.log('MangaReader - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%');
+                if (!manga.url) {
+                    return worker.pop();
+                }
+                console.log('MangaHere - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.nomEn);
                 this.getOneManga(mongo, worker, manga);
-            }, mangaList).limit(100).run(); // .stack();
+            }).map(mangaList).limit(50).run(); // .stack();
 
             this.babyWorkers.listMangas.complete(() => {
                 callback({});
@@ -71,6 +74,11 @@ module.exports = class MangaHeres {
             sniffer.parseWithLink("http://" + manga.url, (htmlObject) => {
 
                 var datas = sniffer.search("div|[class=\"manga_detail\"]");
+
+                if (datas.length <= 0 || !datas[0]) {
+                    worker.pop();
+                    return ;
+                }
 
                 if (savedManga == null) {
                     savedManga = {

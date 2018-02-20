@@ -1,7 +1,5 @@
 'use strict';
 
-const httpClient = require('./httpClient');
-
 const Japscan = require('./japscan');
 const MangaReader = require("./mangareader");
 const MangaHere = require("./mangahere");
@@ -11,8 +9,6 @@ const Mongo = require('./mongo');
 // App
 
 const apiEden = new ApiEden();
-
-const client = new httpClient();
 const japscan = new Japscan();
 const mangareader = new MangaReader();
 const mangahere = new MangaHere();
