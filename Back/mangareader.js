@@ -122,7 +122,7 @@ module.exports = class MangaReader {
                         if (l[k].next[0].next[1].content[0])
                             nl.link = "http://www.mangareader.net" + l[k].next[0].next[1].content[0].trim().replace("href=\"", "").replace("\"", "");
                         if (l[k].next[1].value)
-                            nl.date = l[k].next[1].value
+                            nl.date = new Date(l[k].next[1].value).toDateString();
                         listManga.push(nl);
                     }
                 }
