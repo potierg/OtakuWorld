@@ -135,7 +135,7 @@ module.exports = class Japscan {
                                 chapter.nomChap = chap.value.substring(pos + 1).trim();
                                 nb = chap.value.substring(0, pos - 1).trim();
                             } else if (info)
-                                nb = info.trim();
+                                nb = chap.value.trim();
 
                             if (nb && nb.match(/\d+/g)) {
                                 chapter.numero = nb;
