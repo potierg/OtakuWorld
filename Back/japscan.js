@@ -142,7 +142,7 @@ module.exports = class Japscan {
                                 else
                                     chapter.numero = chapter.numero.substring(0, chapter.numero.indexOf(':'));
                                 if (chapter.numero) {
-                                    chapter.numero = chapter.numero.match(/\d+/g).map(Number)[0];
+                                    chapter.numero = chapter.numero.match(/[+-]?\d+(\.\d+)?/g).map(function(v) { return parseFloat(v); })[0];
                                 }
                             }
                             chapter.linkJapscan = chap.content[0].replace("href=\"//", "").replace("\"", "");

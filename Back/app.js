@@ -41,7 +41,9 @@ mongo.connect(() => {
       console.log("API LOAD");
       japscan.getMangaList(mongo, function (o) {
         mangareader.getMangaList(mongo, function (obj) {
-          console.log("END");
+          mangahere.getMangaList(mongo, function (obj) {
+            console.log("END");
+          });
         });
       });
     });

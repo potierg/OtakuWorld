@@ -22,6 +22,10 @@ module.exports = class MangaReader {
 
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
+                if (!manga.url) {
+                    console.log(manga);
+                    return worker.pop();
+                }
                 console.log('MangaReader - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%');
                 this.getOneManga(mongo, worker, manga);
             }, mangaList).limit(100).run(); // .stack();
@@ -118,7 +122,7 @@ module.exports = class MangaReader {
                     if (k > 0) {
                         var nl = {};
                         if (l[k].next[0].next[1].value)
-                            nl.numero = l[k].next[0].next[1].value.substring(manga.nomEn.length).match(/\d+/g).map(Number)[0];
+                            nl.numero = l[k].next[0].next[1].value.substring(manga.nomEn.length).match(/[+-]?\d+(\.\d+)?/g).map(function(v) { return parseFloat(v); })[0];
                         if (l[k].next[0].next[1].content[0])
                             nl.link = "http://www.mangareader.net" + l[k].next[0].next[1].content[0].trim().replace("href=\"", "").replace("\"", "");
                         if (l[k].next[1].value)

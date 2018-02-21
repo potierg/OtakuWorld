@@ -25,11 +25,12 @@ module.exports = class MangaHeres {
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
                 if (!manga.url) {
+                    console.log(manga);
                     return worker.pop();
                 }
-                console.log('MangaHere - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.nomEn);
+                console.log('MangaHere - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.nomEn, " - ", manga.url);
                 this.getOneManga(mongo, worker, manga);
-            }).map(mangaList).limit(50).run(); // .stack();
+            }).map(mangaList).limit(1).run(); // .stack();
 
             this.babyWorkers.listMangas.complete(() => {
                 callback({});
@@ -51,6 +52,12 @@ module.exports = class MangaHeres {
 
                     if (info.next[0].content[2])
                         m.url = info.next[0].content[2].trim().replace("href=\"//", "").replace("\"", "");
+
+                    if (!m.url) {
+                        var s = decode(info.next[0].content[1]);
+                        m.nomEn = s.substring(0, s.indexOf('href')).trim().replace("rel=\"", "").replace("\"", "");
+                        m.url = s.substring(s.indexOf('href')).trim().replace("href=\"//", "").replace("\"", "");
+                    }
                     mangaList.push(m);
                 }
             }
@@ -138,7 +145,7 @@ module.exports = class MangaHeres {
                     var li = l[1].next[k];
                     if (li.next && li.next[0] && li.next[0].next) {
                         if (li.next[0].next[0].value)
-                            nl.numero = li.next[0].next[0].value.substring(manga.nomEn.length + 2).match(/\d+/g).map(Number)[0];
+                            nl.numero = li.next[0].next[0].value.substring(manga.nomEn.length + 2).match(/[+-]?\d+(\.\d+)?/g).map(function(v) { return parseFloat(v); })[0];
 
                         if (li.next[0].str)
                             nl.nomChap = li.next[0].str;
