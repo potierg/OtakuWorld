@@ -14,13 +14,15 @@ module.exports = class MangaHeres {
     constructor() {
     }
 
-    getMangaList(mongo, callback) {
+    getMangaList(mongo, callback, start = 0) {
         this.babyWorkers = new babyWorkers;
         sniffer.clean();
         sniffer.parseWithLink("http://www.mangahere.cc/mangalist/", (htmlObject) => {
             var l = sniffer.search("div|[class=\"nopic_list clearfix\"]");
             var mangaList = this.getListAbc(l[2].next, []);
             mangaList = this.getListAbc(l[3].next, mangaList);
+
+            mangaList = mangaList.slice(start);
 
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
@@ -29,8 +31,9 @@ module.exports = class MangaHeres {
                     return worker.pop();
                 }
                 console.log('MangaHere - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.nomEn, " - ", manga.url);
-                this.getOneManga(mongo, worker, manga);
-            }).map(mangaList).limit(1).run(); // .stack();
+                this.getOneManga(mongo, worker, manga, () => {
+                });
+            }).map(mangaList).limit(100).run(); // .stack();
 
             this.babyWorkers.listMangas.complete(() => {
                 callback({});
@@ -170,6 +173,7 @@ module.exports = class MangaHeres {
                 mongo.deleteMangaById(id, () => {
                     mongo.addManga({ manga: savedManga }, () => {
                         worker.pop();
+                        callback();
                     });
                 })
 

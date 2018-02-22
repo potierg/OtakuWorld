@@ -34,7 +34,7 @@ mongo.connect(() => {
   } else if (process.argv[2] == 'mangahere') {
     mangahere.getMangaList(mongo, function (obj) {
       console.log("END");
-    });
+    }, 0);
   } else if (process.argv[2] == 'all') {
     apiEden.reset(() => {
       japscan.setEden(apiEden);
