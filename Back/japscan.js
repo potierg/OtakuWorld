@@ -19,7 +19,6 @@ module.exports = class Japscan {
         sniffer.clean();
         console.log("Get Mangas List");
         sniffer.parseWithLink("http://www.japscan.com/mangas/", (htmlObject) => {
-            console.log("Done");
             var listHtml = sniffer.search("div|[id=\"liste_mangas\"]");
             var mangaList = [];
 
@@ -35,9 +34,15 @@ module.exports = class Japscan {
                 }
             }
 
+
+            this.getOneManga(mongo, null, mangaList[14], callback);
+            return;
+
+            console.log("Done Start Download =>", mangaList.length);
+
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
-                console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%');
+                //console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%');
                 this.getOneManga(mongo, worker, manga);
             }).map(mangaList).limit(100).run() // .stack();
 
@@ -50,23 +55,25 @@ module.exports = class Japscan {
         });
     }
 
-    getOneManga(mongo, worker, manga) {
+    getOneManga(mongo, worker, manga, callback) {
 
         mongo.getMangaByName(manga.nomFR, (info) => {
-            var savedManga = null;
-            var id = 0;
-            if (info) {
-                savedManga = info.manga;
-                id = info._id;
-            }
-
             sniffer.clean();
             sniffer.parseWithLink(manga.url, (htmlObject) => {
+
+                var savedManga = null;
+                var id = 0;
+
+                if (info) {
+                    savedManga = info;
+                    id = info._id;
+                    console.log("Exist =>", savedManga.Nom);
+                }
 
                 if (savedManga == null) {
                     savedManga = {
                         Nom: "", Genre: [], 'Nom Alternatif': [], Synopsis: {},
-                        Statut: manga.statut, 'Sortie Initial': "", Auteur: "", Cover: {},
+                        Statut: manga.statut, 'Sortie Initial': "", Auteur: [], Cover: {},
                     }
                 }
 
@@ -88,12 +95,24 @@ module.exports = class Japscan {
                 var tableHtml = sniffer.search("div|[class=\"table\"]");
                 var t = sniffer.formatTable(tableHtml);
                 for (var k in t[0]) {
-                    if (k != 'Genre')
-                        if (k == "Nom Alternatif" && savedManga['Nom Alternatif'].indexOf(t[0][k]) == -1) {
+                    if (k != 'Genre' && k != 'Terminé Le')
+                        if (k == "Nom Alternatif") {
                             t[0][k].toLowerCase().split(",").map(function (s) {
                                 if (savedManga['Nom Alternatif'].indexOf(s.trim()) === -1)
                                     savedManga['Nom Alternatif'].push(s.trim())
                             });
+                        }
+                        else if (k == "Auteur") {
+                            if (t[0][k].indexOf(";") !== -1)
+                                t[0][k].toLowerCase().split(";").map(function (s) {
+                                    if (savedManga['Auteur'].indexOf(s.trim()) === -1)
+                                        savedManga['Auteur'].push(s.trim())
+                                });
+                            else
+                                t[0][k].toLowerCase().split(",").map(function (s) {
+                                    if (savedManga['Auteur'].indexOf(s.trim()) === -1)
+                                        savedManga['Auteur'].push(s.trim())
+                                });
                         }
                         else if (!savedManga[k])
                             savedManga[k] = t[0][k];
@@ -142,7 +161,7 @@ module.exports = class Japscan {
                                 else
                                     chapter.numero = chapter.numero.substring(0, chapter.numero.indexOf(':'));
                                 if (chapter.numero) {
-                                    chapter.numero = chapter.numero.match(/[+-]?\d+(\.\d+)?/g).map(function(v) { return parseFloat(v); })[0];
+                                    chapter.numero = chapter.numero.match(/[+-]?\d+(\.\d+)?/g).map(function (v) { return parseFloat(v); })[0];
                                 }
                             }
                             chapter.linkJapscan = chap.content[0].replace("href=\"//", "").replace("\"", "");
@@ -160,23 +179,102 @@ module.exports = class Japscan {
                     }
                 }
 
-                savedManga.Japscan = listTome;
+                savedManga.Japscan = listTome.reverse();
 
-                if (!savedManga.Cover.eden) {
-                    var m = this.Eden.search(savedManga.nomFR);
-                    if (!m)
-                        m = this.Eden.search(savedManga['Nom Alternatif'][0]);
 
-                    if (m != null)
-                        savedManga.Cover.eden = m.cover;
-                }
 
-                mongo.deleteMangaById(id, () => {
-                    mongo.addManga({ manga: savedManga }, () => {
-                        worker.pop();
-                    });
+
+                this.getOneChapter(savedManga.Japscan[0], (r) => {
+                    //savedManga.Japscan[0].pages = r;
+                    callback(r);
                 })
+
+                return;
+
+
+
+                var bw = new babyWorkers;
+
+                /*bw.create('listOneChap', (worker, chap) => {
+
+                    console.log(chap);
+                    this.getOneChapter(chap, (r) => {
+                        chap.pages = r;
+                        worker.pop();
+                    })
+
+                }).map(savedManga.Japscan).limit(1).run();*/
+
+
+                bw.listOneChap.complete(() => {
+                    if (!savedManga.Cover.eden) {
+                        var m = this.Eden.search(savedManga.nomFR);
+                        if (!m)
+                            m = this.Eden.search(savedManga['Nom Alternatif'][0]);
+
+                        if (m != null)
+                            savedManga.Cover.eden = m.cover;
+                    }
+
+                    callback(savedManga);
+                    return;
+
+                    /*mongo.deleteMangaById(id, () => {
+                        mongo.addManga(savedManga, () => {
+                            if (worker)
+                                worker.pop();
+                        });
+                    })*/
+                });
+
             });
+        });
+    }
+
+    getOneChapter(chap, callback) {
+
+        var listPages = [];
+
+        sniffer.parseWithLink('http://' + chap.linkJapscan, (htmlObject) => {
+
+            var listLink = [];
+            var allPages = sniffer.search("select|[id=\"pages\"]");
+
+            allPages.map((i) => {
+
+                var cnt = 0;
+                if (i.content[0].indexOf("selected") !== -1)
+                    cnt = 1;
+
+                if (i.content[cnt].indexOf("IMG") === -1) {
+                    listLink.push("http://www.japscan.com" + i.content[cnt + 1].replace("value=\"", "").replace("\"", "").trim());
+                }
+            });
+
+            var firstImg = sniffer.search("a|[id=\"img_link\"]")[0].content[4].replace("src=\"", "").replace("\"", "").trim();
+
+            var bw = new babyWorkers;
+
+            bw.create('onePage', (worker, pageUrl) => {
+
+                sniffer.parseWithLink(pageUrl, (htmlObject) => {
+
+                    console.log(pageUrl);
+                    var img = sniffer.search("div|[itemtype=\"http://schema.org/Article\"]");
+                    console.log(img);
+                    img = img[0].content[4].replace("src=\"", "").replace("\"", "").trim();
+                    console.log(img);
+                    listPages.push(img);
+
+                    worker.pop();
+                });
+            }).map(listLink).limit(1).run();
+
+
+            bw.onePage.complete(() => {
+                callback(listPages);
+            });
+            return;
         });
     }
 }

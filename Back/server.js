@@ -48,9 +48,13 @@ var listMangas = null;
 
 app.get('/run/japscan', (req, res) => {
     mongo.connect(() => {
-        japscan.getMangaList(mongo, function (obj) {
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify(obj));
+        apiEden.reset(() => {
+            japscan.setEden(apiEden);
+            console.log("API LOAD");
+            japscan.getMangaList(mongo, function (obj) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(obj));
+            });
         });
     });
 });
@@ -67,6 +71,14 @@ app.get('/run/mangahere', (req, res) => {
         mangahere.getMangaList(mongo, function (obj) {
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify(obj));
+        });
+    });
+});
+
+app.get('/getmangas', (req, res) => {
+    mongo.connect(() => {
+        mongo.getAllMangas((response) => {
+            res.end(JSON.stringify(response));
         });
     });
 });
