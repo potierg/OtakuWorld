@@ -35,7 +35,10 @@ module.exports = class Japscan {
             }
 
 
-            this.getOneManga(mongo, null, mangaList[14], callback);
+            console.log(mangaList[14]);
+            this.getOneManga(mongo, null, mangaList[14], (r) => {
+                callback(r);
+            });
             return;
 
             console.log("Done Start Download =>", mangaList.length);
@@ -182,7 +185,7 @@ module.exports = class Japscan {
                 savedManga.Japscan = listTome.reverse();
 
 
-
+                console.log(savedManga.Japscan[0]);
 
                 this.getOneChapter(savedManga.Japscan[0], (r) => {
                     //savedManga.Japscan[0].pages = r;
@@ -235,6 +238,7 @@ module.exports = class Japscan {
 
         var listPages = [];
 
+        console.log("Get chapter");
         sniffer.parseWithLink('http://' + chap.linkJapscan, (htmlObject) => {
 
             var listLink = [];
@@ -253,12 +257,24 @@ module.exports = class Japscan {
 
             var firstImg = sniffer.search("a|[id=\"img_link\"]")[0].content[4].replace("src=\"", "").replace("\"", "").trim();
 
-            var bw = new babyWorkers;
+            console.log(listLink[0]);
+            sniffer.parseWithLink(listLink[0], (htmlObject) => {
+
+                callback(htmlObject);
+                return ;
+
+            });
+
+            return;
+
+            /*var bw = new babyWorkers;
 
             bw.create('onePage', (worker, pageUrl) => {
 
                 sniffer.parseWithLink(pageUrl, (htmlObject) => {
 
+                    callback(htmlObject);
+                    return ;
                     console.log(pageUrl);
                     var img = sniffer.search("div|[itemtype=\"http://schema.org/Article\"]");
                     console.log(img);
@@ -268,7 +284,9 @@ module.exports = class Japscan {
 
                     worker.pop();
                 });
-            }).map(listLink).limit(1).run();
+            }).map(listLink).limit(1).run();*/
+
+            return;
 
 
             bw.onePage.complete(() => {
