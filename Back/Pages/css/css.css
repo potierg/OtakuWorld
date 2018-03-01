@@ -1,0 +1,24 @@
+@font-face {
+  font-family: 'Bangers';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Bangers Regular'), local('Bangers-Regular'), url(../fonts/FeVQS0BTqb0h60ACH55Q3Q.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Droid Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Droid Sans Regular'), local('DroidSans-Regular'), url(../fonts/SlGVmQWMvZQIdix7AFxXkHNSaA.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans Regular'), local('OpenSans-Regular'), url(../fonts/mem8YaGs126MiZpBA-UFVZ0e.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Oregano';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Oregano'), local('Oregano-Regular'), url(../fonts/If2IXTPxciS3H4S2oZDVOw.ttf) format('truetype');
+}

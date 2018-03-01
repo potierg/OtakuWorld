@@ -34,24 +34,21 @@ module.exports = class Japscan {
                 }
             }
 
-
-            console.log(mangaList[14]);
-            this.getOneManga(mongo, null, mangaList[14], (r) => {
-                callback(r);
-            });
-            return;
+            var t;
 
             console.log("Done Start Download =>", mangaList.length);
 
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
-                //console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%');
-                this.getOneManga(mongo, worker, manga);
-            }).map(mangaList).limit(100).run() // .stack();
+                console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%');
+                this.getOneManga(mongo, worker, manga, (r) => {
+                    t = r;
+                });
+            }).map(mangaList.slice(14, 15)).limit(100).run() // .stack();
 
 
             this.babyWorkers.listMangas.complete(() => {
-                callback({});
+                callback(t);
             });
 
             return;
@@ -183,33 +180,18 @@ module.exports = class Japscan {
                 }
 
                 savedManga.Japscan = listTome.reverse();
+                console.log("Start DL Saga");
 
-
-                console.log(savedManga.Japscan[0]);
-
-                this.getOneChapter(savedManga.Japscan[0], (r) => {
-                    //savedManga.Japscan[0].pages = r;
-                    callback(r);
-                })
-
-                return;
-
-
-
-                var bw = new babyWorkers;
-
-                /*bw.create('listOneChap', (worker, chap) => {
-
-                    console.log(chap);
-                    this.getOneChapter(chap, (r) => {
+                worker.create('listOneChap', (worker2, chap) => {
+                    this.getOneChapter(chap, worker2, (r) => {
+                        console.log(chap);
                         chap.pages = r;
-                        worker.pop();
-                    })
+                        worker2.pop();
+                    });
+                }).map(savedManga.Japscan).limit(1).run();
 
-                }).map(savedManga.Japscan).limit(1).run();*/
 
-
-                bw.listOneChap.complete(() => {
+                worker.listOneChap.complete(() => {
                     if (!savedManga.Cover.eden) {
                         var m = this.Eden.search(savedManga.nomFR);
                         if (!m)
@@ -234,11 +216,10 @@ module.exports = class Japscan {
         });
     }
 
-    getOneChapter(chap, callback) {
+    getOneChapter(chap, worker, callback) {
 
         var listPages = [];
 
-        console.log("Get chapter");
         sniffer.parseWithLink('http://' + chap.linkJapscan, (htmlObject) => {
 
             var listLink = [];
@@ -251,45 +232,39 @@ module.exports = class Japscan {
                     cnt = 1;
 
                 if (i.content[cnt].indexOf("IMG") === -1) {
-                    listLink.push("http://www.japscan.com" + i.content[cnt + 1].replace("value=\"", "").replace("\"", "").trim());
+
+                    var l = "http://www.japscan.com" + i.content[cnt + 1].replace("value=\"", "").replace("\"", "").trim();
+                    for (var i = 1; i <= 9; i++)
+                        l = l.replace("0" + i + ".html", i + ".html");
+
+                    listLink.push(l);
                 }
             });
+            console.log("Start");
 
-            var firstImg = sniffer.search("a|[id=\"img_link\"]")[0].content[4].replace("src=\"", "").replace("\"", "").trim();
+            worker.create('onePage', (worker2, pageUrl) => {
 
-            console.log(listLink[0]);
-            sniffer.parseWithLink(listLink[0], (htmlObject) => {
-
-                callback(htmlObject);
-                return ;
-
-            });
-
-            return;
-
-            /*var bw = new babyWorkers;
-
-            bw.create('onePage', (worker, pageUrl) => {
-
+                console.log("Get", pageUrl);
                 sniffer.parseWithLink(pageUrl, (htmlObject) => {
-
-                    callback(htmlObject);
-                    return ;
-                    console.log(pageUrl);
-                    var img = sniffer.search("div|[itemtype=\"http://schema.org/Article\"]");
-                    console.log(img);
-                    img = img[0].content[4].replace("src=\"", "").replace("\"", "").trim();
-                    console.log(img);
-                    listPages.push(img);
-
-                    worker.pop();
+                    console.log("End parse");
+                    var l = sniffer.search("a|[id=\"img_link\"]")[0].content[4].replace("src=\"", "").replace("\"", "").trim()
+                    listPages.push(l);
+                    console.log(l);
+                    sniffer.clean();
+                    worker2.pop();
                 });
-            }).map(listLink).limit(1).run();*/
+            }).map(listLink).limit(1).run();
 
-            return;
+            worker.onePage.complete(() => {
 
+                listPages.sort((a, b) => {
+                    if (a < b) return -1;
+                    if (a > b) return 1;
+                    return 0;
+                });
 
-            bw.onePage.complete(() => {
+                console.log("End");
+
                 callback(listPages);
             });
             return;

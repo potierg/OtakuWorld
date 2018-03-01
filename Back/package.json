@@ -11,9 +11,12 @@
     "async": "^2.6.0",
     "baby-workers": "^2.0.0",
     "connect-timeout": "^1.9.0",
+    "curlrequest": "^1.0.1",
     "decode-html": "^2.0.0",
     "express": "^4.16.1",
+    "request": "^2.83.0",
     "web-sniffer-js": "^1.1.6",
+    "website-scraper": "^3.3.2",
     "xhr2": "^0.1.4"
   }
 }
