@@ -3,6 +3,7 @@
 const webSniffer = require('web-sniffer-js');
 const babyWorkers = require('baby-workers');
 const { exec } = require('child_process');
+var fs = require('fs');
 const sniffer = new webSniffer;
 
 module.exports = class Japscan {
@@ -36,14 +37,13 @@ module.exports = class Japscan {
             }
 
             var t;
-
             console.log("Done Start Download =>", mangaList.length);
 
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
                 console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.url);
                 this.getOneManga(mongo, worker, manga);
-            }).map(mangaList.slice(2, 3)).limit(1).run() // .stack();
+            }).map(mangaList.slice(80)).limit(1).run()
 
 
             this.babyWorkers.listMangas.complete(() => {
@@ -58,16 +58,16 @@ module.exports = class Japscan {
 
         mongo.getMangaByName(manga.nomFR, (info) => {
             sniffer.clean();
+            var mdb = info;
             exec('curl ' + manga.url, (err, stdout, stderr) => {
                 sniffer.parseWithFile(stdout, (htmlObject) => {
 
                     var savedManga = null;
                     var id = 0;
 
-                    if (info) {
-                        savedManga = info;
-                        id = info._id;
-                        console.log("Exist =>", savedManga.Nom);
+                    if (mdb) {
+                        savedManga = mdb;
+                        id = mdb._id;
                     }
 
                     if (savedManga == null) {
@@ -175,33 +175,64 @@ module.exports = class Japscan {
                         var Tome = listTome[keyTome];
                         if (Tome.chapters.length == 1) {
                             Tome.linkJapscan = Tome.chapters[0].linkJapscan;
+                            if (Tome.chapters[0].pages)
+                                Tome.pages = Tome.chapters[0].pages;
                             delete (Tome.chapters);
                         }
                     }
+                    for (var keyTome in listTome) {
+                        var Tome = listTome[keyTome];
+                        var validTomeDB;
 
+                        for (var keyTome2 in savedManga.Japscan) {
+                            if (savedManga.Japscan[keyTome2].numero == Tome.numero)
+                                validTomeDB = savedManga.Japscan[keyTome2];
+                        }
+
+                        if (validTomeDB && Tome.chapters) {
+
+                            for (var keyChapter in Tome.chapters) {
+
+                                for (var keyChapter2 in validTomeDB.chapters) {
+
+                                    if (Tome.chapters[keyChapter].numero == validTomeDB.chapters[keyChapter2].numero
+                                        && validTomeDB.chapters[keyChapter2].pages)
+                                        Tome.chapters[keyChapter].pages = validTomeDB.chapters[keyChapter2].pages;
+                                }
+                            }
+
+                        } else if (validTomeDB && validTomeDB.pages)
+                            Tome.pages = validTomeDB.pages;
+                    }
                     savedManga.Japscan = listTome.reverse();
 
                     worker.create('listOneChap', (worker2, chap) => {
 
                         if (chap.chapters) {
                             worker2.create('getChapters', (worker3, c) => {
-                                this.getOneChapter(c, worker3, (r) => {
-                                    c.pages = r;
+                                if (!c.pages || c.pages.indexOf(false) !== -1) {
+                                    this.getOneChapter(c, worker3, (r) => {
+                                        if (r)
+                                            c.pages = r;
+                                        worker3.pop();
+                                    });
+                                } else
                                     worker3.pop();
-                                });
                             }).map(chap.chapters).limit(1).run();
 
                             worker2.getChapters.complete(() => {
                                 worker2.pop();
                             });
-                        } else {
+                        } else if (!chap.pages || chap.pages.indexOf(false) !== -1) {
                             this.getOneChapter(chap, worker2, (r) => {
-                                chap.pages = r;
+                                if (r)
+                                    chap.pages = r;
                                 worker2.pop();
                             });
                         }
+                        else
+                            worker2.pop();
                     }).map(savedManga.Japscan).limit(1).run();
-
 
                     worker.listOneChap.complete(() => {
                         if (!savedManga.Cover.eden) {
@@ -213,16 +244,13 @@ module.exports = class Japscan {
                                 savedManga.Cover.eden = m.cover;
                         }
 
-                        return;
-
-                        /*mongo.deleteMangaById(id, () => {
+                        mongo.deleteMangaById(id, () => {
                             mongo.addManga(savedManga, () => {
                                 if (worker)
                                     worker.pop();
                             });
-                        })*/
+                        })
                     });
-
                 });
             });
         });
@@ -237,6 +265,11 @@ module.exports = class Japscan {
 
                 var listLink = [];
                 var allPages = sniffer.search("select|[id=\"pages\"]");
+
+                if (!allPages) {
+                    callback(null);
+                    return;
+                }
 
                 allPages.map((i) => {
 
@@ -254,23 +287,30 @@ module.exports = class Japscan {
                     }
                 });
                 worker.create('onePage', (worker2, pageUrl) => {
-                    exec("curl "+pageUrl, (err, stdout, stderr) => {
-                        sniffer.parseWithFile(stdout, (htmlObject) => {
-                            var l = sniffer.search("a|[id=\"img_link\"]");
-                            if (l == false)
-                                console.log("Error", chap, pageUrl);
-                            else
-                                l = l[0].content[4].replace("src=\"", "").replace("\"", "").trim();
-                            listPages.push(l);
-                            sniffer.clean();
-                            worker2.pop();
+                    if (pageUrl.indexOf("http://www.japscan.com#") == 0) {
+                        listPages.push(false);
+                        worker2.pop();
+                    } else {
+                        exec("curl " + pageUrl, (err, stdout, stderr) => {
+                            sniffer.parseWithFile(stdout, (htmlObject) => {
+                                var l = sniffer.search("a|[id=\"img_link\"]");
+                                if (l == false) {
+                                    fs.appendFile("./error.txt", chap.linkJapscan + " - " + pageUrl + "\n", function (err) { });
+                                    console.log("Error", chap.linkJapscan + " - " + pageUrl);
+                                }
+                                else
+                                    l = l[0].content[4].replace("src=\"", "").replace("\"", "").trim();
+                                listPages.push(l);
+                                sniffer.clean();
+                                worker2.pop();
+                            });
                         });
-                    });
+                    }
                 }).map(listLink).limit(100).run();
 
                 worker.onePage.complete(() => {
 
-                    listPages.sort((a, b) => {
+                    listPages = listPages.sort((a, b) => {
                         if (a < b) return -1;
                         if (a > b) return 1;
                         return 0;

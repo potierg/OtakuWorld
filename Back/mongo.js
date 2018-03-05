@@ -61,7 +61,7 @@ module.exports = class Mongo {
         nom = nom.toLowerCase();
         this.exec((db) => {
             const collection = db.collection('OtakuWorld');
-            collection.find({ 'manga.Nom Alternatif': nom }).toArray(function (err, docs) {
+            collection.find({ 'Nom Alternatif': nom }).toArray(function (err, docs) {
                 assert.equal(err, null);
 
                 var manga = null;
