@@ -43,7 +43,7 @@ module.exports = class Japscan {
             this.babyWorkers.create('listMangas', (worker, manga) => {
                 console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.url);
                 this.getOneManga(mongo, worker, manga);
-            }).map(mangaList.slice(80)).limit(1).run()
+            }).map(mangaList.slice(0)).limit(1).run()
 
 
             this.babyWorkers.listMangas.complete(() => {
@@ -212,8 +212,11 @@ module.exports = class Japscan {
                             worker2.create('getChapters', (worker3, c) => {
                                 if (!c.pages || c.pages.indexOf(false) !== -1) {
                                     this.getOneChapter(c, worker3, (r) => {
-                                        if (r)
-                                            c.pages = r;
+                                        if (r) {
+                                            if (r.encrypt > 0)
+                                                c.encrypt = r.encrypt;
+                                            c.pages = r.pages;
+                                        }
                                         worker3.pop();
                                     });
                                 } else
@@ -225,8 +228,11 @@ module.exports = class Japscan {
                             });
                         } else if (!chap.pages || chap.pages.indexOf(false) !== -1) {
                             this.getOneChapter(chap, worker2, (r) => {
-                                if (r)
-                                    chap.pages = r;
+                                if (r) {
+                                    if (r.encrypt > 0)
+                                        chap.encrypt = r.encrypt;
+                                    chap.pages = r.pages;
+                                }
                                 worker2.pop();
                             });
                         }
@@ -259,6 +265,7 @@ module.exports = class Japscan {
     getOneChapter(chap, worker, callback) {
 
         var listPages = [];
+        var t = this;
 
         exec('curl http://' + chap.linkJapscan, (err, stdout, stderr) => {
             sniffer.parseWithFile(stdout, (htmlObject) => {
@@ -286,6 +293,7 @@ module.exports = class Japscan {
                         listLink.push(l);
                     }
                 });
+                var encrypt = 0;
                 worker.create('onePage', (worker2, pageUrl) => {
                     if (pageUrl.indexOf("http://www.japscan.com#") == 0) {
                         listPages.push(false);
@@ -294,12 +302,37 @@ module.exports = class Japscan {
                         exec("curl " + pageUrl, (err, stdout, stderr) => {
                             sniffer.parseWithFile(stdout, (htmlObject) => {
                                 var l = sniffer.search("a|[id=\"img_link\"]");
-                                if (l == false) {
-                                    fs.appendFile("./error.txt", chap.linkJapscan + " - " + pageUrl + "\n", function (err) { });
-                                    console.log("Error", chap.linkJapscan + " - " + pageUrl);
-                                }
-                                else
+                                if (l) {
                                     l = l[0].content[4].replace("src=\"", "").replace("\"", "").trim();
+                                } else {
+
+                                    var i = sniffer.search("div|[id=\"parImg\"]")
+                                    if (i !== false) {
+                                        var f = sniffer.search("body")[2].next;
+
+
+                                        var uri_chap = f[1].content[2].replace("data-uri=\"", "").replace("\"", "");
+
+                                        var nom_chap = f[1].content[0];
+                                        if (nom_chap && nom_chap.indexOf("name"))
+                                            nom_chap = nom_chap.replace("name=\"", "").replace("\"", "");
+                                        else
+                                            nom_chap = null;
+
+                                        var nom_manga = f[0].content[2].replace("data-nom=\"", "").replace("\"", "");
+                                        var nom_image = i[0].content[1].replace("data-img=\"", "").replace("\"", "");
+
+                                        var finalLink = 'http://cd151.d836pbl.club/cr_images/' + nom_manga.replace("/", "_").replace("?", "") + "/" + (nom_chap == null ? uri_chap : nom_chap) + '/' + nom_image;
+
+                                        l = finalLink;
+                                        encrypt = 1;
+                                    } else {
+                                        l = false;
+                                        fs.appendFile("./error.txt", chap.linkJapscan + " - " + pageUrl + "\n", function (err) { });
+                                        console.log("Error", chap.linkJapscan + " - " + pageUrl);
+                                    }
+                                }
+
                                 listPages.push(l);
                                 sniffer.clean();
                                 worker2.pop();
@@ -316,7 +349,7 @@ module.exports = class Japscan {
                         return 0;
                     });
 
-                    callback(listPages);
+                    callback({ encrypt: encrypt, pages: listPages });
                 });
                 return;
             });
