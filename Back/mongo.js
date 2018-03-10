@@ -49,11 +49,24 @@ module.exports = class Mongo {
         })
     }
 
+    clearManga(cb) {
+        this.exec((db) => {
+            const collection = db.collection('Mangas');
+            collection.remove({});
+        })        
+    }
+
     addManga(manga, cb) {
         this.exec((db) => {
-            const collection = db.collection('OtakuWorld');
-            // Find some documents
+            const collection = db.collection('Mangas');
             collection.insert(manga, cb);
+        })
+    }
+
+    addChapter(chapter, cb) {
+        this.exec((db) => {
+            const collection = db.collection('Chapters');
+            collection.insert(chapter, cb);
         })
     }
 

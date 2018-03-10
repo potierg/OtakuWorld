@@ -19,8 +19,9 @@ module.exports = class Japscan {
     getMangaList(mongo, callback) {
         this.babyWorkers = new babyWorkers;
         sniffer.clean();
+        //mongo.clearManga();
         console.log("Get Mangas List");
-        sniffer.parseWithLink("http://www.japscan.com/mangas/", (htmlObject) => {
+        sniffer.parseWithLink("http://www.japscan.cc/mangas/", (htmlObject) => {
             var listHtml = sniffer.search("div|[id=\"liste_mangas\"]");
             var mangaList = [];
 
@@ -31,7 +32,7 @@ module.exports = class Japscan {
                         nomFR: elemHtml.next[0].next[0].value,
                         genre: elemHtml.next[1].value,
                         statut: elemHtml.next[2].value,
-                        url: "http://www.japscan.com" + elemHtml.next[0].next[0].content[0].replace("href=\"", "").replace("\"", ""),
+                        url: "http://www.japscan.cc" + elemHtml.next[0].next[0].content[0].replace("href=\"", "").replace("\"", ""),
                     });
                 }
             }
@@ -41,9 +42,9 @@ module.exports = class Japscan {
 
             var mangaLength = mangaList.length;
             this.babyWorkers.create('listMangas', (worker, manga) => {
-                console.log('Japscan - Manga pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.url);
+                console.log('Pushed', parseInt(worker.getId()) + 1, '/', mangaLength, '-', Math.round((parseInt(worker.getId()) / mangaLength) * 100), '%', manga.nomFR);
                 this.getOneManga(mongo, worker, manga);
-            }).map(mangaList.slice(0)).limit(1).run()
+            }).map(mangaList.slice(785)).limit(1).run();
 
 
             this.babyWorkers.listMangas.complete(() => {
@@ -120,7 +121,7 @@ module.exports = class Japscan {
 
                     // Get Tomes & Chapitres
 
-                    var chapsHtml = sniffer.search("div|[id=\"liste_chapitres\"]");
+                    /*var chapsHtml = sniffer.search("div|[id=\"liste_chapitres\"]");
                     var currentTome = { chapters: [] };
                     var listTome = [];
 
@@ -238,9 +239,9 @@ module.exports = class Japscan {
                         }
                         else
                             worker2.pop();
-                    }).map(savedManga.Japscan).limit(1).run();
+                    }).map(savedManga.Japscan).limit(1).run();*/
 
-                    worker.listOneChap.complete(() => {
+                    //worker.listOneChap.complete(() => {
                         if (!savedManga.Cover.eden) {
                             var m = this.Eden.search(savedManga.nomFR);
                             if (!m)
@@ -250,13 +251,15 @@ module.exports = class Japscan {
                                 savedManga.Cover.eden = m.cover;
                         }
 
+                        savedManga.downloadState = 0; // 0: not exec | 1:running | 2: done
+
                         mongo.deleteMangaById(id, () => {
                             mongo.addManga(savedManga, () => {
                                 if (worker)
                                     worker.pop();
                             });
                         })
-                    });
+                    //});
                 });
             });
         });
