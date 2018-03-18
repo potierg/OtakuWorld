@@ -27,6 +27,10 @@ mongo.connect(() => {
         console.log("END");
       });
     });
+  } else if (process.argv[2] == 'japscan-scan') {
+    japscan.getMangaScan(mongo, function (o) {
+      console.log("END");
+    });
   } else if (process.argv[2] == 'mangareader') {
     mangareader.getMangaList(mongo, function (obj) {
       console.log("END");

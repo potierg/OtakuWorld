@@ -1,6 +1,7 @@
 'use strict';
 
 const MongoClient = require('mongodb').MongoClient;
+var mongoId = require('mongodb');
 const assert = require('assert');
 
 // Connection URL
@@ -56,6 +57,15 @@ module.exports = class Mongo {
         })        
     }
 
+    addScans(listScans, cb) {
+        this.exec((db) => {
+            const collection = db.collection('Scans');
+            collection.insert(listScans, (err, d) => {
+                cb(d.ops[0]._id);
+            });
+        })
+    }
+
     addManga(manga, cb) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
@@ -70,10 +80,28 @@ module.exports = class Mongo {
         })
     }
 
+    getMangaNotDownload(callback) {
+        this.exec((db) => {
+            const collection = db.collection('Mangas');
+            collection.findOne({ 'data.japscan.state': 0 }, function (err, docs) {
+                callback(docs);
+            });
+        });
+    }
+
+    updateManga(manga, callback) {
+        this.exec((db) => {
+            const collection = db.collection('Mangas');
+            collection.update({ _id:  new mongoId.ObjectId(manga._id)}, manga, (err, res) => {
+                callback();
+            });
+        });
+    }
+
     getMangaByName(nom, callback) {
         nom = nom.toLowerCase();
         this.exec((db) => {
-            const collection = db.collection('OtakuWorld');
+            const collection = db.collection('Mangas');
             collection.find({ 'Nom Alternatif': nom }).toArray(function (err, docs) {
                 assert.equal(err, null);
 
