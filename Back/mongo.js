@@ -57,12 +57,33 @@ module.exports = class Mongo {
         })        
     }
 
-    addScans(listScans, cb) {
+    updateScans(listScans, cb) {
         this.exec((db) => {
             const collection = db.collection('Scans');
-            collection.insert(listScans, (err, d) => {
-                cb(d.ops[0]._id);
+
+            collection.findOne({'mangaId': new mongoId.ObjectId(listScans.mangaId)}, function (err, docs) {
+
+                if (docs) {
+                    deleteScansByMangaId(listScans.mangaId, () => {
+                        collection.insert(listScans, (err, d) => {
+                            return cb(d.ops[0]._id);
+                        });
+                    })
+                } else {
+                    collection.insert(listScans, (err, d) => {
+                        return cb(d.ops[0]._id);
+                    });
+                }
             });
+        })
+    }
+
+    deleteScansByMangaId(mangaId, callback) {
+        this.exec((db) => {
+            const collection = db.collection('Scans');
+
+            collection.deleteOne({'mangaId': new mongoId.ObjectId(mangaId)});
+            callback();
         })
     }
 
@@ -73,17 +94,19 @@ module.exports = class Mongo {
         })
     }
 
-    addChapter(chapter, cb) {
-        this.exec((db) => {
-            const collection = db.collection('Chapters');
-            collection.insert(chapter, cb);
-        })
-    }
-
-    getMangaNotDownload(callback) {
+    getMangaNotUpdate(callback) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
-            collection.findOne({ 'data.japscan.state': 0 }, function (err, docs) {
+            collection.findOne({$or: [{'data.japscan.state': 0}, {'data.japscan.state': 3}]}, function (err, docs) {
+                callback(docs);
+            });
+        });
+    }
+
+    getScanById(id, callback) {
+        this.exec((db) => {
+            const collection = db.collection('Scans');
+            collection.findOne({'mangaId': new mongoId.ObjectId(id)}, function (err, docs) {
                 callback(docs);
             });
         });
@@ -93,7 +116,7 @@ module.exports = class Mongo {
         this.exec((db) => {
             const collection = db.collection('Mangas');
             collection.update({ _id:  new mongoId.ObjectId(manga._id)}, manga, (err, res) => {
-                callback();
+                return callback();
             });
         });
     }
@@ -102,24 +125,9 @@ module.exports = class Mongo {
         nom = nom.toLowerCase();
         this.exec((db) => {
             const collection = db.collection('Mangas');
-            collection.find({ 'Nom Alternatif': nom }).toArray(function (err, docs) {
-                assert.equal(err, null);
-
-                var manga = null;
-                if (docs.length > 0)
-                    manga = docs[0];
-
+            collection.findOne({ 'Nom Alternatif': nom }, function (err, manga) {
                 callback(manga);
             });
-        })
-    }
-
-    deleteMangaById(id, callback) {
-        this.exec((db) => {
-            const collection = db.collection('OtakuWorld');
-
-            collection.deleteOne({ "_id": id });
-            callback();
-        })
+        });
     }
 }

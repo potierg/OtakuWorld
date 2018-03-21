@@ -1,6 +1,6 @@
 'use strict';
 
-const Japscan = require('./japscan');
+const Japscan = require('./src/Parsers/Japscan/japscan');
 const MangaReader = require("./mangareader");
 const MangaHere = require("./mangahere");
 const ApiEden = require('./apiEden');
@@ -22,9 +22,11 @@ mongo.connect(() => {
   if(process.argv[2] == 'japscan') {
     apiEden.reset(() => {
       japscan.setEden(apiEden);
+      japscan.setMongo(mongo);
       console.log("API LOAD");
-      japscan.getMangaList(mongo, function (o) {
+      japscan.refreshMangaList(function () {
         console.log("END");
+        process.exit();
       });
     });
   } else if (process.argv[2] == 'japscan-scan') {
