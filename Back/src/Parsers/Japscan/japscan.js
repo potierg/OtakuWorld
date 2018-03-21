@@ -72,7 +72,7 @@ module.exports = class Japscan {
                         worker.pop();
                 });
 
-            }).map(listAllMangas).limit(100).run();
+            }).map(listAllMangas).limit(1).run();
 
 
             babyWorkers.getAllScans.complete(() => {
