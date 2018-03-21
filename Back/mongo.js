@@ -40,10 +40,9 @@ module.exports = class Mongo {
 
     getAllMangas(callback) {
         this.exec((db) => {
-            const collection = db.collection('OtakuWorld');
+            const collection = db.collection('Mangas');
             // Find some documents
             collection.find({}).toArray(function (err, docs) {
-                assert.equal(err, null);
                 callback(docs);
             });
 
@@ -64,14 +63,12 @@ module.exports = class Mongo {
             collection.findOne({'mangaId': new mongoId.ObjectId(listScans.mangaId)}, function (err, docs) {
 
                 if (docs) {
-                    deleteScansByMangaId(listScans.mangaId, () => {
-                        collection.insert(listScans, (err, d) => {
-                            return cb(d.ops[0]._id);
-                        });
-                    })
+                    collection.update({ mangaId:  new mongoId.ObjectId(listScans.mangaId)}, listScans, (err, d) => {
+                        cb(docs._id);
+                    });
                 } else {
                     collection.insert(listScans, (err, d) => {
-                        return cb(d.ops[0]._id);
+                        cb(d.ops[0]._id);
                     });
                 }
             });
@@ -94,6 +91,15 @@ module.exports = class Mongo {
         })
     }
 
+    updateManga(id, manga, callback) {
+        this.exec((db) => {
+            const collection = db.collection('Mangas');
+            collection.update({ _id:  new mongoId.ObjectId(id)}, manga, (err, res) => {
+                return callback();
+            });
+        });
+    }
+
     getMangaNotUpdate(callback) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
@@ -112,13 +118,14 @@ module.exports = class Mongo {
         });
     }
 
-    updateManga(manga, callback) {
+    getMangaById(id, callback) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
-            collection.update({ _id:  new mongoId.ObjectId(manga._id)}, manga, (err, res) => {
-                return callback();
+            collection.findOne({ '_id': new mongoId.ObjectId(id) }, function (err, manga) {
+                callback(manga);
             });
         });
+
     }
 
     getMangaByName(nom, callback) {

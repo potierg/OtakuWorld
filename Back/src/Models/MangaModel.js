@@ -54,10 +54,8 @@ module.exports = class MangaModel {
     }
 
     savedInDB(mongo, cb) {
-        if (this.id > 0) {
-            newManga = this.formatMangaToObject();
-            newManga._id = this.id;
-            mongo.updateManga(this, () => {
+        if (this.Id != 0) {
+            mongo.updateManga(this.Id, this.formatMangaToObject(), () => {
                 cb();
             });
         }

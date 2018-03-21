@@ -4,7 +4,7 @@ const JapscanParser = require('./japscanParser');
 const MangaModel = require('../../Models/MangaModel');
 
 const webSniffer = require('web-sniffer-js');
-const babyWorkers = require('baby-workers');
+const BabyWorkers = require('baby-workers');
 const { exec } = require('child_process');
 var fs = require('fs');
 const sniffer = new webSniffer;
@@ -42,22 +42,53 @@ module.exports = class Japscan {
 
 
     getMangaScan(mongo, callback) {
-        mongo.getMangaNotUpdate((m) => {
-            console.log("Download", m.Nom, "Scans");
-            m.data.japscan.state = 1;
-            mongo.updateManga(m, () => {
-                this.downloadOneManga(mongo, m, (list) => {
-                    mongo.updateScans({mangaId:m._id, scans:list}, (id) => {
-                        m.data.japscan.scanId = id;
-                        m.data.japscan.state = 2;
-                        mongo.updateManga(m, () => {
-                            console.log("End");
-                            process.exit();
-                        });
-                    });
-                })
 
+        mongo.getAllMangas((listAllMangas) => {
+
+            var babyWorkers = new BabyWorkers;
+            
+
+            babyWorkers.create('getAllScans', (worker, oneManga) => {
+
+                mongo.getMangaById(oneManga._id, (manga) => {
+                    if (manga.data && manga.data.japscan && manga.data.japscan.state == 0) {
+                        
+                        console.log("Download", manga.Nom, "Scans");
+                        manga.data.japscan.state = 1;
+                        mongo.updateManga(manga._id, manga, () => {
+                            this.downloadOneManga(mongo, manga, (list) => {
+                                mongo.updateScans({mangaId:manga._id, scans:list}, (id) => {
+                                    manga.data.japscan.scanId = id;
+                                    manga.data.japscan.state = 2;
+                                    mongo.updateManga(manga._id, manga, () => {
+                                        worker.pop();
+                                    });
+                                });
+                            })
+            
+                        });
+
+                    } else
+                        worker.pop();
+                });
+
+            }).map(listAllMangas).limit(100).run();
+
+
+            babyWorkers.getAllScans.complete(() => {
+                callback();
             });
+
+
+        });
+
+        return ;
+
+
+        mongo.getMangaNotUpdate((m) => {
+            if (!m)
+                process.exit();
+            
         })
     }
 
@@ -160,7 +191,7 @@ module.exports = class Japscan {
 
                     listTome = listTome.reverse();
 
-                    var worker = new babyWorkers;
+                    var worker = new BabyWorkers;
             
                     worker.create('listOneChap', (worker2, chap) => {
             
