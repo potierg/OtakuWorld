@@ -39,7 +39,45 @@ module.exports = class Japscan {
 
     }
 
+    restartDB(mongo, callback) {
+        mongo.getMangaCrashed((mangas) => {
 
+            var babyWorkers = new BabyWorkers;
+            babyWorkers.create('restart', (worker, manga) => {
+                    manga.data.japscan.state = 0;
+                    mongo.updateManga(manga._id, manga, () => {
+                        worker.pop();
+                    });
+    
+            }).map(mangas).limit(1).run();
+
+            babyWorkers.restart.complete(() => {
+                callback();
+            });
+        });
+    }
+
+    reloadDB(mongo, callback) {
+        mongo.getScanByScanNull((scans) => {
+
+            var babyWorkers = new BabyWorkers;
+            babyWorkers.create('reload', (worker, element) => {
+                mongo.getMangaById(element.mangaId, (manga) => {
+                        console.log("update", manga._id);
+                        manga.data.japscan.scanId = null;
+                        manga.data.japscan.state = 0;
+                        mongo.updateManga(manga._id, manga, () => {
+                            mongo.deleteScansByMangaId(manga._id);                                
+                            worker.pop();
+                        });
+                }); 
+            }).map(scans).limit(1).run();
+
+            babyWorkers.reload.complete(() => {
+                callback();
+            });
+        });
+    }
 
     getMangaScan(mongo, callback) {
 

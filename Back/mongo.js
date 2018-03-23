@@ -75,12 +75,11 @@ module.exports = class Mongo {
         })
     }
 
-    deleteScansByMangaId(mangaId, callback) {
+    deleteScansByMangaId(mangaId) {
         this.exec((db) => {
             const collection = db.collection('Scans');
 
             collection.deleteOne({'mangaId': new mongoId.ObjectId(mangaId)});
-            callback();
         })
     }
 
@@ -100,6 +99,16 @@ module.exports = class Mongo {
         });
     }
 
+    getMangaCrashed(callback) {
+        this.exec((db) => {
+            const collection = db.collection('Mangas');
+            collection.find({'data.japscan.state': 1}).toArray(function (err, docs) {
+                callback(docs);
+            });
+        });
+    }
+
+
     getMangaNotUpdate(callback) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
@@ -118,6 +127,16 @@ module.exports = class Mongo {
         });
     }
 
+    getScanByScanNull(callback) {
+        this.exec((db) => {
+            const collection = db.collection('Scans');
+            collection.find({'scans': null}).toArray(function (err, docs) {
+                callback(docs);
+            });
+        });
+    }
+
+
     getMangaById(id, callback) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
@@ -125,7 +144,6 @@ module.exports = class Mongo {
                 callback(manga);
             });
         });
-
     }
 
     getMangaByName(nom, callback) {

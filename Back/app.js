@@ -38,6 +38,21 @@ mongo.connect(() => {
         process.exit();
       });
       break;
-  }
+
+    case 'japscan-restart':
+      japscan.restartDB(mongo, function (o) {
+        console.log("END");
+        process.exit();
+      });
+      break;
+
+
+    case 'japscan-reload':
+      japscan.reloadDB(mongo, function (o) {
+        console.log("END");
+        process.exit();
+      });
+      break;
+    }
   
 });
