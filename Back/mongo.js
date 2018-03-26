@@ -127,10 +127,10 @@ module.exports = class Mongo {
         });
     }
 
-    getScanByScanNull(callback) {
+    getScansByScanNull(callback) {
         this.exec((db) => {
             const collection = db.collection('Scans');
-            collection.find({'scans': null}).toArray(function (err, docs) {
+            collection.find({'$or':[{'scans': null}, {'scans.chapters.pages': false}, {'scans.pages': false}]}).toArray(function (err, docs) {
                 callback(docs);
             });
         });

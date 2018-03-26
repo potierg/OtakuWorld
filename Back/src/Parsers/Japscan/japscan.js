@@ -58,16 +58,24 @@ module.exports = class Japscan {
     }
 
     reloadDB(mongo, callback) {
-        mongo.getScanByScanNull((scans) => {
+        mongo.getScansByScanNull((scans) => {
 
             var babyWorkers = new BabyWorkers;
             babyWorkers.create('reload', (worker, element) => {
+
+                var isScanNull = false;
+                if (element.scans == null)
+                    isScanNull = true;    
+
                 mongo.getMangaById(element.mangaId, (manga) => {
                         console.log("update", manga._id);
-                        manga.data.japscan.scanId = null;
+                        if (isScanNull)
+                            manga.data.japscan.scanId = null;
                         manga.data.japscan.state = 0;
                         mongo.updateManga(manga._id, manga, () => {
-                            mongo.deleteScansByMangaId(manga._id);                                
+
+                            if (isScanNull)
+                                mongo.deleteScansByMangaId(manga._id);                                
                             worker.pop();
                         });
                 }); 
@@ -103,7 +111,6 @@ module.exports = class Japscan {
                                     });
                                 });
                             })
-            
                         });
 
                     } else
@@ -173,9 +180,9 @@ module.exports = class Japscan {
                                 if (pos > 0) {
                                     chapter.nomChap = chap.value.substring(pos + 1).trim();
                                     nb = chap.value.substring(0, pos - 1).trim();
-                                } else if (info)
+                                } else
                                     nb = chap.value.trim();
-            
+
                                 if (nb && nb.match(/\d+/g)) {
                                     chapter.numero = nb;
                                     if (chapter.numero.indexOf("Volume") === -1 && chapter.numero.indexOf("Épisode") === -1)
@@ -192,6 +199,10 @@ module.exports = class Japscan {
                             }
                         }
                     }
+
+                    if (listTome.length == 0) {
+                        listTome = [{numero:1, chapters:currentTome.chapters}];
+                    }
             
                     for (var keyTome in listTome) {
                         var Tome = listTome[keyTome];
@@ -207,7 +218,7 @@ module.exports = class Japscan {
                         var validTomeDB;
             
                         for (var keyTome2 in savedScans.scans) {
-                            if (savedScans.scans[keyTome2].numero == Tome.numero)
+                            if (savedScans.scans[keyTome2] != null && savedScans.scans[keyTome2].numero == Tome.numero)
                                 validTomeDB = savedScans.scans[keyTome2];
                         }
             
@@ -309,10 +320,10 @@ module.exports = class Japscan {
                 });
                 var encrypt = 0;
                 worker.create('onePage', (worker2, pageUrl) => {
-                    if (pageUrl.indexOf("http://www.japscan.com#") == 0) {
+                    if (pageUrl.indexOf("http://www.japscan.cc#") == 0) {
                         listPages.push(false);
                         worker2.pop();
-                    } else {
+                    } else if (pageUrl.indexOf('#') == -1) {
                         exec("curl " + pageUrl, (err, stdout, stderr) => {
                             sniffer.parseWithFile(stdout, (htmlObject) => {
                                 var l = sniffer.search("a|[id=\"img_link\"]");

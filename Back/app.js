@@ -53,6 +53,16 @@ mongo.connect(() => {
         process.exit();
       });
       break;
+
+
+    case 'get':
+      mongo.getAllMangas((response) => {
+        console.log(response.length);
+      });
+      break;
+
     }
+
+
   
 });
