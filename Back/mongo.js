@@ -136,6 +136,14 @@ module.exports = class Mongo {
         });
     }
 
+    getScansByScanVUS(callback) {
+        this.exec((db) => {
+            const collection = db.collection('Scans');
+            collection.find({'$or':[{'scans.chapters.isUs': true}, {'scans.isUs': true}]}).toArray(function (err, docs) {
+                callback(docs);
+            });
+        });
+    }
 
     getMangaById(id, callback) {
         this.exec((db) => {

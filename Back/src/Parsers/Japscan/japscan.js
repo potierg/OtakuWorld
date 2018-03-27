@@ -44,11 +44,11 @@ module.exports = class Japscan {
 
             var babyWorkers = new BabyWorkers;
             babyWorkers.create('restart', (worker, manga) => {
-                    manga.data.japscan.state = 0;
-                    mongo.updateManga(manga._id, manga, () => {
-                        worker.pop();
-                    });
-    
+                manga.data.japscan.state = 0;
+                mongo.updateManga(manga._id, manga, () => {
+                    worker.pop();
+                });
+
             }).map(mangas).limit(1).run();
 
             babyWorkers.restart.complete(() => {
@@ -65,20 +65,45 @@ module.exports = class Japscan {
 
                 var isScanNull = false;
                 if (element.scans == null)
-                    isScanNull = true;    
+                    isScanNull = true;
 
                 mongo.getMangaById(element.mangaId, (manga) => {
-                        console.log("update", manga._id);
-                        if (isScanNull)
-                            manga.data.japscan.scanId = null;
-                        manga.data.japscan.state = 0;
-                        mongo.updateManga(manga._id, manga, () => {
+                    console.log("update", manga._id, manga.Nom);
+                    if (isScanNull)
+                        manga.data.japscan.scanId = null;
+                    manga.data.japscan.state = 0;
+                    mongo.updateManga(manga._id, manga, () => {
 
-                            if (isScanNull)
-                                mongo.deleteScansByMangaId(manga._id);                                
-                            worker.pop();
-                        });
-                }); 
+                        if (isScanNull)
+                            mongo.deleteScansByMangaId(manga._id);
+                        worker.pop();
+                    });
+                });
+            }).map(scans).limit(1).run();
+
+            babyWorkers.reload.complete(() => {
+                callback();
+            });
+        });
+    }
+
+    reloadVUS(mongo, callback) {
+        mongo.getScansByScanVUS((scans) => {
+
+            var babyWorkers = new BabyWorkers;
+            babyWorkers.create('reload', (worker, element) => {
+
+                var isScanNull = false;
+                if (element.scans == null)
+                    isScanNull = true;
+
+                mongo.getMangaById(element.mangaId, (manga) => {
+                    console.log("VUS - update", manga._id, manga.Nom);
+                    manga.data.japscan.state = 0;
+                    mongo.updateManga(manga._id, manga, () => {
+                        worker.pop();
+                    });
+                });
             }).map(scans).limit(1).run();
 
             babyWorkers.reload.complete(() => {
@@ -92,18 +117,18 @@ module.exports = class Japscan {
         mongo.getAllMangas((listAllMangas) => {
 
             var babyWorkers = new BabyWorkers;
-            
+
 
             babyWorkers.create('getAllScans', (worker, oneManga) => {
 
                 mongo.getMangaById(oneManga._id, (manga) => {
                     if (manga.data && manga.data.japscan && manga.data.japscan.state == 0) {
-                        
+
                         console.log("Download", manga.Nom, "Scans");
                         manga.data.japscan.state = 1;
                         mongo.updateManga(manga._id, manga, () => {
                             this.downloadOneManga(mongo, manga, (list) => {
-                                mongo.updateScans({mangaId:manga._id, scans:list}, (id) => {
+                                mongo.updateScans({ mangaId: manga._id, scans: list }, (id) => {
                                     manga.data.japscan.scanId = id;
                                     manga.data.japscan.state = 2;
                                     mongo.updateManga(manga._id, manga, () => {
@@ -127,13 +152,13 @@ module.exports = class Japscan {
 
         });
 
-        return ;
+        return;
 
 
         mongo.getMangaNotUpdate((m) => {
             if (!m)
                 process.exit();
-            
+
         })
     }
 
@@ -144,7 +169,7 @@ module.exports = class Japscan {
                 sniffer.parseWithFile(stdout, (htmlObject) => {
 
                     if (!savedScans) {
-                        savedScans = {scans:[]};
+                        savedScans = { scans: [] };
                     }
 
                     // Get Tomes & Chapitres
@@ -152,7 +177,7 @@ module.exports = class Japscan {
                     var chapsHtml = sniffer.search("div|[id=\"liste_chapitres\"]");
                     var currentTome = { chapters: [] };
                     var listTome = [];
-            
+
                     for (var keyLine in chapsHtml) {
                         var line = chapsHtml[keyLine];
                         if (!line.next) {
@@ -165,7 +190,7 @@ module.exports = class Japscan {
                                 vol = info.substring(0, pos - 1).trim();
                             } else
                                 vol = info.trim();
-            
+
                             if (vol && vol.match(/\d+/g))
                                 currentTome.numero = vol.match(/\d+/g).map(Number)[0];
                             currentTome.chapters = [];
@@ -177,6 +202,9 @@ module.exports = class Japscan {
                                 var pos = chap.value.indexOf(":");
                                 var nb = "";
                                 var chapter = {};
+                                if (line.next[keyLine2].next[1]) {
+                                    chapter.isUs = true;
+                                }
                                 if (pos > 0) {
                                     chapter.nomChap = chap.value.substring(pos + 1).trim();
                                     nb = chap.value.substring(0, pos - 1).trim();
@@ -201,9 +229,9 @@ module.exports = class Japscan {
                     }
 
                     if (listTome.length == 0) {
-                        listTome = [{numero:1, chapters:currentTome.chapters}];
+                        listTome = [{ numero: 1, chapters: currentTome.chapters }];
                     }
-            
+
                     for (var keyTome in listTome) {
                         var Tome = listTome[keyTome];
                         if (Tome.chapters.length == 1) {
@@ -216,24 +244,24 @@ module.exports = class Japscan {
                     for (var keyTome in listTome) {
                         var Tome = listTome[keyTome];
                         var validTomeDB;
-            
+
                         for (var keyTome2 in savedScans.scans) {
-                            if (savedScans.scans[keyTome2] != null && savedScans.scans[keyTome2].numero == Tome.numero)
+                            if (savedScans.scans[keyTome2] != null && !savedScans.scans[keyTome2].isUs && savedScans.scans[keyTome2].numero == Tome.numero)
                                 validTomeDB = savedScans.scans[keyTome2];
                         }
-            
+
                         if (validTomeDB && Tome.chapters) {
-            
+
                             for (var keyChapter in Tome.chapters) {
-            
+
                                 for (var keyChapter2 in validTomeDB.chapters) {
-            
-                                    if (Tome.chapters[keyChapter].numero == validTomeDB.chapters[keyChapter2].numero
+
+                                    if (!Tome.chapters[keyChapter].isUs && Tome.chapters[keyChapter].numero == validTomeDB.chapters[keyChapter2].numero
                                         && validTomeDB.chapters[keyChapter2].pages)
                                         Tome.chapters[keyChapter].pages = validTomeDB.chapters[keyChapter2].pages;
                                 }
                             }
-            
+
                         } else if (validTomeDB && validTomeDB.pages)
                             Tome.pages = validTomeDB.pages;
                     }
@@ -241,9 +269,9 @@ module.exports = class Japscan {
                     listTome = listTome.reverse();
 
                     var worker = new BabyWorkers;
-            
+
                     worker.create('listOneChap', (worker2, chap) => {
-            
+
                         if (chap.chapters) {
                             worker2.create('getChapters', (worker3, c) => {
                                 if (!c.pages || c.pages.indexOf(false) !== -1) {
@@ -258,7 +286,7 @@ module.exports = class Japscan {
                                 } else
                                     worker3.pop();
                             }).map(chap.chapters).limit(1).run();
-            
+
                             worker2.getChapters.complete(() => {
                                 worker2.pop();
                             });

@@ -33,9 +33,11 @@ mongo.connect(() => {
       break;
 
     case 'japscan-scan':
-      japscan.getMangaScan(mongo, function (o) {
-        console.log("END");
-        process.exit();
+      japscan.reloadVUS(mongo, () => {
+        japscan.getMangaScan(mongo, function (o) {
+          console.log("END");
+          process.exit();
+        });
       });
       break;
 
