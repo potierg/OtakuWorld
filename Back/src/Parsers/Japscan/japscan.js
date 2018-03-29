@@ -181,6 +181,10 @@ module.exports = class Japscan {
                     for (var keyLine in chapsHtml) {
                         var line = chapsHtml[keyLine];
                         if (!line.next) {
+
+                            if (currentTome.chapters.length > 0 && listTome.length == 0)
+                                listTome.push({nomTome: 'Last', numero: -42, chapters: currentTome.chapters});
+
                             currentTome = {};
                             var info = line.value;
                             var pos = info.indexOf(":");
@@ -258,7 +262,7 @@ module.exports = class Japscan {
 
                                 for (var keyChapter2 in validTomeDB.chapters) {
 
-                                    if (!Tome.chapters[keyChapter].isUs && Tome.chapters[keyChapter].numero == validTomeDB.chapters[keyChapter2].numero
+                                    if (!validTomeDB.chapters[keyChapter].isUs && Tome.chapters[keyChapter].numero == validTomeDB.chapters[keyChapter2].numero
                                         && validTomeDB.chapters[keyChapter2].pages)
                                         Tome.chapters[keyChapter].pages = validTomeDB.chapters[keyChapter2].pages;
                                 }
