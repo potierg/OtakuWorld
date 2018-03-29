@@ -203,7 +203,9 @@ module.exports = class Japscan {
                                 var nb = "";
                                 var chapter = {};
                                 if (line.next[keyLine2].next[1]) {
-                                    chapter.isUs = true;
+                                    if (line.next[keyLine2].next[1].value.indexOf("SPOILER") != -1 || 
+                                        line.next[keyLine2].next[1].value.indexOf("VUS") != -1)
+                                        chapter.isUs = true;
                                 }
                                 if (pos > 0) {
                                     chapter.nomChap = chap.value.substring(pos + 1).trim();
