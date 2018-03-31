@@ -114,52 +114,27 @@ module.exports = class Japscan {
 
     getMangaScan(mongo, callback) {
 
-        mongo.getAllMangas((listAllMangas) => {
-
-            var babyWorkers = new BabyWorkers;
-
-
-            babyWorkers.create('getAllScans', (worker, oneManga) => {
-
-                mongo.getMangaById(oneManga._id, (manga) => {
-                    if (manga.data && manga.data.japscan && manga.data.japscan.state == 0) {
-
-                        console.log("Download", manga.Nom, "Scans");
-                        manga.data.japscan.state = 1;
-                        mongo.updateManga(manga._id, manga, () => {
-                            this.downloadOneManga(mongo, manga, (list) => {
-                                mongo.updateScans({ mangaId: manga._id, scans: list }, (id) => {
-                                    manga.data.japscan.scanId = id;
-                                    manga.data.japscan.state = 2;
-                                    mongo.updateManga(manga._id, manga, () => {
-                                        worker.pop();
-                                    });
-                                });
-                            })
+        mongo.getMangaNotUpdate((manga) => {
+            if (manga !== null) {
+                console.log("Download", manga.Nom, "Scans");
+                manga.data.japscan.state = 1;
+                mongo.updateManga(manga._id, manga, () => {
+                    this.downloadOneManga(mongo, manga, (list) => {
+                        mongo.updateScans({ mangaId: manga._id, scans: list }, (id) => {
+                            manga.data.japscan.scanId = id;
+                            manga.data.japscan.state = 2;
+                            mongo.updateManga(manga._id, manga, () => {
+                                return this.getMangaScan(mongo, callback);
+                            });
                         });
-
-                    } else
-                        worker.pop();
+                    })
                 });
-
-            }).map(listAllMangas).limit(1).run();
-
-
-            babyWorkers.getAllScans.complete(() => {
+            }
+            else {
                 callback();
-            });
-
-
+                return ;
+            }
         });
-
-        return;
-
-
-        mongo.getMangaNotUpdate((m) => {
-            if (!m)
-                process.exit();
-
-        })
     }
 
     downloadOneManga(mongo, manga, callback) {
@@ -208,7 +183,8 @@ module.exports = class Japscan {
                                 var chapter = {};
                                 if (line.next[keyLine2].next[1]) {
                                     if (line.next[keyLine2].next[1].value.indexOf("SPOILER") != -1 || 
-                                        line.next[keyLine2].next[1].value.indexOf("VUS") != -1)
+                                        line.next[keyLine2].next[1].value.indexOf("VUS") != -1 || 
+                                        line.next[keyLine2].next[1].value.indexOf("RAW") != -1)
                                         chapter.isUs = true;
                                 }
                                 if (pos > 0) {
@@ -262,7 +238,7 @@ module.exports = class Japscan {
 
                                 for (var keyChapter2 in validTomeDB.chapters) {
 
-                                    if (!validTomeDB.chapters[keyChapter].isUs && Tome.chapters[keyChapter].numero == validTomeDB.chapters[keyChapter2].numero
+                                    if (validTomeDB.chapters[keyChapter] && !validTomeDB.chapters[keyChapter].isUs && Tome.chapters[keyChapter].numero == validTomeDB.chapters[keyChapter2].numero
                                         && validTomeDB.chapters[keyChapter2].pages)
                                         Tome.chapters[keyChapter].pages = validTomeDB.chapters[keyChapter2].pages;
                                 }

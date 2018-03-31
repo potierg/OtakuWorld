@@ -108,11 +108,10 @@ module.exports = class Mongo {
         });
     }
 
-
     getMangaNotUpdate(callback) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
-            collection.findOne({$or: [{'data.japscan.state': 0}, {'data.japscan.state': 3}]}, function (err, docs) {
+            collection.findOne({$or: [{'data.japscan.state': 0}]}, function (err, docs) {
                 callback(docs);
             });
         });
