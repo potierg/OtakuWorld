@@ -38,4 +38,21 @@ module.exports = class MangasDB {
             });
         });
     }
+
+    getByName(search, callback) {
+        this.getCollection(function(collection) {
+            var reg = {'$or':[{'Nom': new RegExp(search)}, {"Nom Alternatif": new RegExp(search)}]};
+           collection.find(reg).toArray(function (err, docs) {
+                callback(docs);
+            });
+        });
+    }
+
+    getByAuteur(auteur, callback) {
+        this.getCollection(function(collection) {
+            collection.find({'Auteur': auteur}).toArray(function (err, docs) {
+                callback(docs);
+            });
+        });
+    }
 }

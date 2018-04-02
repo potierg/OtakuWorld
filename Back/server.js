@@ -44,6 +44,27 @@ app.get('/manga/:id', (req, res) => {
     });
 });
 
+app.get('/manga/search/:search', (req, res) => {
+    var search = req.params.search;
+    mangaDB.connect(() => {
+        mangaDB.getByName(search, function(obj) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(obj));        
+        });
+    });
+});
+
+app.get('/manga/autor/:auteur', (req, res) => {
+    var auteur = req.params.auteur;
+    mangaDB.connect(() => {
+        mangaDB.getByAuteur(auteur, function(obj) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(obj));        
+        });
+    });
+});
+
+
 app.get('/manga/:id/chapters', (req, res) => {
     var mangaId = req.params.id;
     scansDB.connect(() => {
