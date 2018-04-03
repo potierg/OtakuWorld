@@ -23,9 +23,10 @@ module.exports = class MangasDB {
         });
     }
 
-    get(callback) {
+    get(count = 25, page = 1, callback) {
         this.getCollection(function(collection) {
-            collection.find({}).toArray(function (err, docs) {
+            collection.find({}).sort({Nom:1}).toArray(function (err, docs) {
+                docs = docs.slice((page - 1) * count, (page * count));
                 callback(docs);
             });
         });
