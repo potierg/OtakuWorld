@@ -9,14 +9,32 @@ import { MangasService } from '../mangas.service';
 export class HomeComponent implements OnInit {
 
   private printMangas: any = [];
+  private currentPage = 1;
+  private onLoad = false;
 
   constructor(private mangasService : MangasService) {
     console.log("INIT");
   }
 
   ngOnInit() {
-    this.mangasService.getAll(1, 25).subscribe(mangas => {
+    this.refreshMangas();
+  }
+
+  public refreshMangas() {
+    this.onLoad = true;
+    this.mangasService.getAll(this.currentPage, 24).subscribe(mangas => {
+      this.onLoad = false;
       this.printMangas = mangas;
     });
+  }
+
+  public previewPage() {
+    this.currentPage--
+    this.refreshMangas();
+  }
+
+  public nextPage() {
+    this.currentPage++
+    this.refreshMangas();
   }
 }

@@ -1,6 +1,4 @@
-<div *ngIf="printMangas.length > 0">
-  <div *ngFor="let manga of printMangas">
-    <p>{{manga.Nom}}</p>
-    <img *ngIf="manga.Cover.eden" [src]="manga.Cover.eden" />
-  </div>
-</div>
+<button (click)="previewPage()">Precédent</button>
+<p>{{currentPage}}</p>
+<button (click)="nextPage()">Suivant</button>
+<app-manga-list *ngIf="printMangas.length > 0 && !onLoad" [listMangaPrint]="printMangas"></app-manga-list>

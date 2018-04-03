@@ -8,12 +8,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { HomeComponent } from './home/home.component';
 import { MangasService } from './mangas.service';
+import { MangaListComponent } from './manga-list/manga-list.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    MangaListComponent
   ],
   imports: [
     BrowserModule,

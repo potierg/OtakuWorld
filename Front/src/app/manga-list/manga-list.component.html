@@ -1,0 +1,37 @@
+<ul class="to-watch-list posters-list list-unstyled list-inline single-row">
+    <li class="new" *ngFor="let manga of listMangaPrint">
+        <div class="nav">
+            <i class="">Star</i>
+            <i class="">DL</i>
+        </div>
+        <!-- // .nav -->
+        <div class="image-crop">
+            <div class="">Nouv.</div>
+                <img *ngIf="manga.Cover.eden" [src]="manga.Cover.eden">
+                <img *ngIf="!manga.Cover.eden" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
+            </div>
+        <div class="episode-details poster-details">
+            <h2>
+                <span class="nb-remainging-episodes">{{manga.data.japscan.last}}</span>
+            </h2>
+            <a class="nb-reviews-link secondary-link">{{manga.Nom}}</a>
+        </div>
+    </li>
+
+    <li></li>
+</ul>
+
+
+
+
+
+<div *ngIf="listMangaPrint.length == 0">
+    <div class="responsive" *ngFor="let manga of listMangaPrint">
+        <div class="gallery">
+            <img *ngIf="manga.Cover.eden" [src]="manga.Cover.eden" width="100" height="60">
+            <img *ngIf="!manga.Cover.eden" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg"
+                width="100" height="60" />
+            <div class="desc">{{manga.Nom}}</div>
+        </div>
+    </div>
+</div>
