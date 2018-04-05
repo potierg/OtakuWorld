@@ -9,18 +9,19 @@ import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
 import { MangasService } from './mangas.service';
 import { MangaListComponent } from './manga-list/manga-list.component';
-
+import { PaginationModule } from 'ngx-pagination-bootstrap'
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    MangaListComponent
+    MangaListComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    PaginationModule,
   ],
   providers: [MangasService],
   bootstrap: [AppComponent]

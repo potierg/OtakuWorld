@@ -13,4 +13,13 @@ export class MangaListComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  getLastChapString(manga) {
+    var last = manga.data.japscan.last;
+    if (last.indexOf("Scan") == 0) {
+      last = last.replace("Scan ", "").substring(manga.Nom.length).replace("VF", "");
+    }
+    last = last.replace("One Shot ", "").replace("Webtoon ", "");
+    return last;
+  }
 }

@@ -1,4 +1,7 @@
 <button (click)="previewPage()">Precédent</button>
 <p>{{currentPage}}</p>
 <button (click)="nextPage()">Suivant</button>
+
+
+
 <app-manga-list *ngIf="printMangas.length > 0 && !onLoad" [listMangaPrint]="printMangas"></app-manga-list>

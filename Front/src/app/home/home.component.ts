@@ -9,6 +9,7 @@ import { MangasService } from '../mangas.service';
 export class HomeComponent implements OnInit {
 
   private printMangas: any = [];
+  private totalMangas: Number;
   private currentPage = 1;
   private onLoad = false;
 
@@ -22,9 +23,10 @@ export class HomeComponent implements OnInit {
 
   public refreshMangas() {
     this.onLoad = true;
-    this.mangasService.getAll(this.currentPage, 24).subscribe(mangas => {
+    this.mangasService.getAll(this.currentPage, 24).subscribe(datas => {
       this.onLoad = false;
-      this.printMangas = mangas;
+      this.printMangas = datas['manga'];
+      this.totalMangas = datas['total'];
     });
   }
 
@@ -37,4 +39,11 @@ export class HomeComponent implements OnInit {
     this.currentPage++
     this.refreshMangas();
   }
+
+  public getPageData() {
+    console.log("event");
+    /*this.page = event.page;
+    this.itemsPerPage = event.itemsPerPage
+    this.loadStudentsByPage(this.page, this.itemsPerPage);*/
+  };
 }

@@ -37,9 +37,9 @@ mangaDB.connect(() => {
     app.get('/mangas/:count/:page', (req, res) => {
         var count = Number.parseInt(req.params.count);
         var page = Number.parseInt(req.params.page);
-            mangaDB.get(count, page, function(obj) {
+            mangaDB.get(count, page, function(obj, t) {
                 res = getHeader(res);
-                res.end(JSON.stringify(obj));        
+                res.end(JSON.stringify({manga: obj, total: t}));
             });
     });
 
