@@ -1,0 +1,147 @@
+#pagination {
+    display:flex;  
+    list-style:none;
+}
+
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #616161;
+  height: 70px;
+}
+
+.menuburger {
+  width: 38px;
+  height: 27px;
+  background-color: #616161;
+  padding-left: 20px;
+
+}
+
+.logo {
+  width: 135px;
+  height: 90px;
+  background-color: #616161;
+  margin-left: -90px;
+}
+
+.search {
+  display: flex;
+  background-color: #616161;
+}
+
+.searchbar {
+  display: flex;
+  color: #e6e6e6;
+  border: 2px;
+  border-style: solid;
+  border-color: black;
+  background-color: #212121;
+  width: 621px;
+  height: 46px;
+  border-radius: 25px;
+  vertical-align: inherit;
+  justify-content: flex-end;
+}
+
+#searcharea {
+  width: 582px;
+  justify-content: flex-end;
+  margin-left: 4px;
+  color: #e6e6e6;
+  font-size: 14px;
+  background-color: #212121;
+  border-radius: 25px;
+}
+
+.searchimg {
+  width: 24px;
+  height: 24px;
+  align-self: center;
+  margin-left: 5px;
+  background-color: transparent;
+
+}
+
+.icone {
+  display: flex;
+  width: 97px;
+  justify-content: space-between;
+  background-color: #616161;
+  padding-right: 20px;
+
+}
+
+.headericons {
+  font-size: 30px;
+}
+
+.menu {
+  float:left;
+  padding-top: 20px;
+  background-color: #616161;
+  width: 287px;
+  color: white;
+  font-size: 23px;
+  margin: 0px;
+}
+
+.content {
+  padding-top: 20px;
+  background-color: #ffffff;
+  color: black;
+  font-size: 23px;
+  margin: 0px;
+}
+
+.ulist{
+  background-color: #616161;
+  margin-left: -20px;
+}
+a {
+  text-decoration: none;
+  color: white;
+  background-color: #616161;
+}
+
+.submenu {
+  overflow: hidden;
+  padding-bottom: 40px;
+  background-color: #616161;
+  font-size: 22px
+}
+
+.subli{
+  background-color: #616161;
+}
+
+.imgmenu {
+  width: 24px;
+  height: 24px;
+  background-color: black;
+  background-color: #616161;
+  padding-right: 20px;
+}
+
+.list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 35px;
+  color: white;
+  cursor: pointer;
+  background-color: #616161;
+}
+
+.listcontact {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 80px;
+  color: white;
+  cursor: pointer;
+  background-color: #616161;
+}

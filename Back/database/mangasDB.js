@@ -41,11 +41,13 @@ module.exports = class MangasDB {
         });
     }
 
-    getByName(search, callback) {
+    getByName(count, page, search, callback) {
         this.getCollection(function(collection) {
             var reg = {'$or':[{'Nom': new RegExp(search)}, {"Nom Alternatif": new RegExp(search)}]};
            collection.find(reg).toArray(function (err, docs) {
-                callback(docs);
+                var total = docs.length;
+                docs = docs.slice((page - 1) * count, (page * count));
+                callback(docs, total);
             });
         });
     }

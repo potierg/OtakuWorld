@@ -10,8 +10,10 @@ export class HomeComponent implements OnInit {
 
   private printMangas: any = [];
   private totalMangas: Number;
+  private searchStr = '';
   private currentPage = 1;
   private onLoad = false;
+  private limit = 25;
 
   constructor(private mangasService : MangasService) {
     console.log("INIT");
@@ -23,27 +25,37 @@ export class HomeComponent implements OnInit {
 
   public refreshMangas() {
     this.onLoad = true;
-    this.mangasService.getAll(this.currentPage, 24).subscribe(datas => {
-      this.onLoad = false;
-      this.printMangas = datas['manga'];
-      this.totalMangas = datas['total'];
-    });
+    if (this.searchStr == '') {
+      this.mangasService.getAll(this.currentPage, 24).subscribe(datas => {
+        this.onLoad = false;
+        this.printMangas = datas['manga'];
+        this.totalMangas = datas['total'];
+      });  
+    }
+    else {
+      this.mangasService.getWithSearch(this.searchStr, this.currentPage, 24).subscribe(datas => {
+        this.onLoad = false;
+        this.printMangas = datas['manga'];
+        this.totalMangas = datas['total'];
+      });  
+    }
   }
 
-  public previewPage() {
-    this.currentPage--
+  public execSearch() {
+  }
+
+  goToPage(n: number): void {
+    this.currentPage = n;
     this.refreshMangas();
   }
 
-  public nextPage() {
-    this.currentPage++
+  onNext(): void {
+    this.currentPage++;
     this.refreshMangas();
   }
 
-  public getPageData() {
-    console.log("event");
-    /*this.page = event.page;
-    this.itemsPerPage = event.itemsPerPage
-    this.loadStudentsByPage(this.page, this.itemsPerPage);*/
-  };
+  onPrev(): void {
+    this.currentPage--;
+    this.refreshMangas();
+  }
 }

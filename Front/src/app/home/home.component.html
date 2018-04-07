@@ -1,7 +1,48 @@
-<button (click)="previewPage()">Precédent</button>
-<p>{{currentPage}}</p>
-<button (click)="nextPage()">Suivant</button>
 
 
+    <header class="header">
+        <i class="menuburger headericons material-icons" style="font-size:40px">menu</i>
+        <!--<img class="logo" src="statics/Home_desktop/menu.png">-->
+        <div class="search">
+            <form class="searchbar" method="get" action="search.php">
+                <i class="headericons material-icons">search</i>
+                <input mdInput name="search" id="searcharea" placeholder="Rechercher" [(ngModel)]="searchStr" (ngModelChange)="refreshMangas()">
+            </form>
+            <span><i class="headericons material-icons">search</i></span>
+        </div>
+        <div class="icone">
+            <span><i class="headericons material-icons">notifications_none</i></span>
+            <span><i class="headericons material-icons">account_circle</i></span>
+        </div>
+    </header>
 
-<app-manga-list *ngIf="printMangas.length > 0 && !onLoad" [listMangaPrint]="printMangas"></app-manga-list>
+    <div class="menu">
+        <ul class="ulist">
+            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Mangas</a></li>
+            <ul class="submenu">
+                <li><i class="headericons material-icons">notifications_none</i><a href="#">Populaire</a></li>
+                <li><i class="headericons material-icons">notifications_none</i><a href="#">Genre</a></li>
+                <li><i class="headericons material-icons">notifications_none</i><a href="#">Dernières Sorties</a></li>
+            </ul>
+            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Librairie</a></li>
+            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Recherche</a></li>
+            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Téléchargement</a></li>
+            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Paramètre</a></li>
+            <li class="listcontact"><i class="headericons material-icons">notifications_none</i><a href="#">Contact</a></li>
+
+        </ul>
+    </div>
+
+    <div>
+        <ul class="pagination">
+            <li><button (click)="onPrev()">Precédent</button></li>
+            <li><p>{{currentPage}}</p></li>
+            <li><button (click)="onNext()">Suivant</button></li>
+        </ul>
+    </div>
+
+    <div style="overflow-y: scroll; height:570px;" class="content">
+        <app-manga-list *ngIf="printMangas.length > 0 && !onLoad" [listMangaPrint]="printMangas"></app-manga-list>
+        <div *ngIf="onLoad">LOADING...</div>
+    </div>
+

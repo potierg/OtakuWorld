@@ -53,13 +53,13 @@ mangaDB.connect(() => {
         });
     });
 
-    app.get('/manga/search/:search', (req, res) => {
+    app.get('/manga/search/:search/:page/:count', (req, res) => {
         var search = req.params.search;
-        mangaDB.connect(() => {
-            mangaDB.getByName(search, function(obj) {
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify(obj));        
-            });
+        var count = Number.parseInt(req.params.count);
+        var page = Number.parseInt(req.params.page);
+        mangaDB.getByName(count, page, search, function(obj, t) {
+            res = getHeader(res);
+            res.end(JSON.stringify(({manga: obj, total: t})));
         });
     });
 

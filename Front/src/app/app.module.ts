@@ -9,7 +9,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
 import { MangasService } from './mangas.service';
 import { MangaListComponent } from './manga-list/manga-list.component';
-import { PaginationModule } from 'ngx-pagination-bootstrap'
+
+import {MatInputModule} from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { PaginationModule } from 'ngx-pagination-bootstrap'
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    PaginationModule,
+    MatInputModule,
+    FormsModule 
   ],
   providers: [MangasService],
   bootstrap: [AppComponent]
