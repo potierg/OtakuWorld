@@ -16,4 +16,8 @@ export class MangasService {
   getWithSearch(search, count, page) {
     return this.http.get('http://127.0.0.1:8080/manga/search/'+search+'/'+count+'/'+page);
   }
+
+  getMangaById(id) {
+    return this.http.get('http://127.0.0.1:8080/manga/'+id);
+  }
 }

@@ -1,14 +1,16 @@
 
+<div style="min-height:100%">
 
     <header class="header">
-        <i class="menuburger headericons material-icons" style="font-size:40px">menu</i>
-        <!--<img class="logo" src="statics/Home_desktop/menu.png">-->
+        <a *ngIf="showMenu" href="javascript:;"><i class="menuburger headericons material-icons" style="font-size:40px" (click)="showMenu = !showMenu">keyboard_backspace</i></a>
+        <a *ngIf="!showMenu" href="javascript:;"><i class="menuburger headericons material-icons" style="font-size:40px" (click)="showMenu = !showMenu">menu</i></a>
+            <!--<img class="logo" src="statics/Home_desktop/menu.png">-->
         <div class="search">
             <form class="searchbar" method="get" action="search.php">
                 <i class="headericons material-icons">search</i>
-                <input mdInput name="search" id="searcharea" placeholder="Rechercher" [(ngModel)]="searchStr" (ngModelChange)="refreshMangas()">
+                <input mdInput name="search" id="searcharea" placeholder="Rechercher" [(ngModel)]="searchStr">
             </form>
-            <span><i class="headericons material-icons">search</i></span>
+            <a href="javascript:;" (click)="refreshMangas()"><span><i class="bigicons material-icons">search</i></span></a>
         </div>
         <div class="icone">
             <span><i class="headericons material-icons">notifications_none</i></span>
@@ -16,33 +18,32 @@
         </div>
     </header>
 
-    <div class="menu">
+    <div class="menu" *ngIf="showMenu">
         <ul class="ulist">
-            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Mangas</a></li>
-            <ul class="submenu">
+            <li class="list"><a href="javascript:;" (click)="viewManga('')"><i class="headericons material-icons">book</i>Mangas</a></li>
+            <ul class="submenu" *ngIf="false">
                 <li><i class="headericons material-icons">notifications_none</i><a href="#">Populaire</a></li>
                 <li><i class="headericons material-icons">notifications_none</i><a href="#">Genre</a></li>
                 <li><i class="headericons material-icons">notifications_none</i><a href="#">Dernières Sorties</a></li>
             </ul>
-            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Librairie</a></li>
-            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Recherche</a></li>
-            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Téléchargement</a></li>
-            <li class="list"><i class="headericons material-icons">notifications_none</i><a href="#">Paramètre</a></li>
-            <li class="listcontact"><i class="headericons material-icons">notifications_none</i><a href="#">Contact</a></li>
+            <li class="list"><i class="headericons material-icons">library_books</i><a href="#">Librairie</a></li>
+            <li class="list"><i class="headericons material-icons">search</i><a href="#">Recherche</a></li>
+            <li class="list"><i class="headericons material-icons">file_download</i><a href="#">Téléchargement</a></li>
+            <li class="list"><i class="headericons material-icons">settings</i><a href="#">Paramètre</a></li>
+            <li class="listcontact"><i class="headericons material-icons">contacts</i><a href="#">Contact</a></li>
 
         </ul>
     </div>
 
-    <div>
-        <ul class="pagination">
-            <li><button (click)="onPrev()">Precédent</button></li>
-            <li><p>{{currentPage}}</p></li>
-            <li><button (click)="onNext()">Suivant</button></li>
-        </ul>
-    </div>
-
-    <div style="overflow-y: scroll; height:570px;" class="content">
-        <app-manga-list *ngIf="printMangas.length > 0 && !onLoad" [listMangaPrint]="printMangas"></app-manga-list>
+    <div [ngClass]="currentMangaId == '' ? 'content' : 'contentManga'">
+        <app-manga-list *ngIf="printMangas.length > 0 && !onLoad && currentMangaId == ''" [listMangaPrint]="printMangas" (change)="viewManga($event)"></app-manga-list>
+        <app-manga-detail *ngIf="!onLoad && currentMangaId != '' && currentScanId == ''"  [mangaId]="currentMangaId" (returnManga)="viewManga($event)" (viewChapterList)="viewChapterList($event)"></app-manga-detail>
+        <app-scan-list *ngIf="!onLoad && currentMangaId != '' && currentScanId != ''" [scanId]="currentScanId" (returnMangaDetail)="viewChapterList($event)"></app-scan-list>
         <div *ngIf="onLoad">LOADING...</div>
     </div>
 
+    <div class="footer" *ngIf="currentMangaId == ''">
+        <ngb-pagination *ngIf="totalMangas > 0" class="d-flex justify-content-center pagination" (pageChange)="setPage($event)" [collectionSize]="totalMangas" [pageSize]="limit" [(page)]="currentPage" [maxSize]="5" [boundaryLinks]="true">
+        </ngb-pagination>
+    </div>
+</div>

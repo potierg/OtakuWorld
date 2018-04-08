@@ -5,9 +5,8 @@ var mongoId = require('mongodb');
 
 module.exports = class MangasDB {
 
-    constructor() {
-        this.mongo = new Mongo();
-
+    constructor(mongo) {
+        this.mongo = mongo;
     }
 
     connect(callback) {
@@ -25,10 +24,10 @@ module.exports = class MangasDB {
 
     get(count = 25, page = 1, callback) {
         this.getCollection(function(collection) {
-            collection.find({}).sort({Nom:1}).toArray(function (err, docs) {
-                var total = docs.length;
-                docs = docs.slice((page - 1) * count, (page * count));
-                callback(docs, total);
+            collection.find({}).sort({Nom:1}).limit(count).skip(count * (page - 1)).toArray(function (err, docs) {
+                collection.find({}).count(function(e, total) {
+                    callback(docs, total);                    
+                })
             });
         });
     }
@@ -44,11 +43,11 @@ module.exports = class MangasDB {
     getByName(count, page, search, callback) {
         this.getCollection(function(collection) {
             var reg = {'$or':[{'Nom': new RegExp(search)}, {"Nom Alternatif": new RegExp(search)}]};
-           collection.find(reg).toArray(function (err, docs) {
-                var total = docs.length;
-                docs = docs.slice((page - 1) * count, (page * count));
-                callback(docs, total);
-            });
+           collection.find(reg).limit(count).skip(count * (page - 1)).toArray(function (err, docs) {
+            collection.find(reg).count(function(e, total) {
+                callback(docs, total);                    
+            })
+        });
         });
     }
 

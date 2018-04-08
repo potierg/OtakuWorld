@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-manga-list',
@@ -8,6 +8,8 @@ import { Component, OnInit, Input } from '@angular/core';
 export class MangaListComponent implements OnInit {
 
   @Input() listMangaPrint: any;
+  @Output()
+  change: EventEmitter<string> = new EventEmitter<string>();
 
   constructor() { }
 
@@ -21,5 +23,9 @@ export class MangaListComponent implements OnInit {
     }
     last = last.replace("One Shot ", "").replace("Webtoon ", "");
     return last;
+  }
+
+  viewManga(id: string) {
+    this.change.emit(id); 
   }
 }

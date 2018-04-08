@@ -1,6 +1,6 @@
 
 <ul class="to-watch-list posters-list list-unstyled list-inline single-row">
-    <li class="new" *ngFor="let manga of listMangaPrint">
+    <li class="new" *ngFor="let manga of listMangaPrint" (click)="viewManga(manga._id)">
         <div class="nav">
             <i class="">Star</i>
             <i class="">DL</i>
@@ -15,5 +15,4 @@
             <a class="nb-reviews-link secondary-link">{{manga.Nom}}</a>
         </div>
     </li>
-    <li *ngFor="let manga of listMangaPrint"></li>
 </ul>

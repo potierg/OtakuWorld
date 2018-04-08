@@ -5,8 +5,8 @@ var mongoId = require('mongodb');
 
 module.exports = class ScansDB {
 
-    constructor() {
-        this.mongo = new Mongo();
+    constructor(mongo) {
+        this.mongo = mongo;
     }
 
     connect(callback) {
@@ -22,10 +22,9 @@ module.exports = class ScansDB {
         });
     }
 
-    getByMangaId(mangaId, callback) {
-        console.log({ 'mangaId': new mongoId.ObjectId(mangaId) });
+    getByScanId(scanId, callback) {
         this.getCollection(function (collection) {
-            collection.findOne({ 'mangaId': new mongoId.ObjectId(mangaId) }, function (err, docs) {
+            collection.findOne({ '_id': new mongoId.ObjectId(scanId) }, function (err, docs) {
                 callback(docs);
             });
         });

@@ -2,6 +2,7 @@
 
 var express = require('express');
 var app = express();
+var MongoDB = require('./database/mongo');
 var MangasDB = require('./database/mangasDB');
 var ScansDB = require('./database/scansDB');
 
@@ -9,8 +10,9 @@ var ScansDB = require('./database/scansDB');
 module.exports = app;
 
 const timeout = require('connect-timeout'); //express v4
-const mangaDB = new MangasDB();
-const scansDB = new ScansDB();
+const mongo = new MongoDB();
+const mangaDB = new MangasDB(mongo);
+const scansDB = new ScansDB(mongo);
 
 // Constants
 const PORT = 8080;
@@ -33,7 +35,7 @@ function getHeader(res) {
 }
 
 // All users
-mangaDB.connect(() => {    
+mongo.connect(() => {
     app.get('/mangas/:count/:page', (req, res) => {
         var count = Number.parseInt(req.params.count);
         var page = Number.parseInt(req.params.page);
@@ -47,7 +49,7 @@ mangaDB.connect(() => {
         var mangaId = req.params.id;
         mangaDB.connect(() => {
             mangaDB.getById(mangaId, function(obj) {
-                res.setHeader('Content-Type', 'application/json');
+                res = getHeader(res);
                 res.end(JSON.stringify(obj));        
             });
         });
@@ -74,13 +76,12 @@ mangaDB.connect(() => {
     });
 
 
-    app.get('/manga/:id/chapters', (req, res) => {
-        var mangaId = req.params.id;
-        scansDB.connect(() => {
-            scansDB.getByMangaId(mangaId, function(obj) {
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify(obj));        
-            });
+    app.get('/manga/chapters/:id', (req, res) => {
+        console.log("CHAPTERS");
+        var scanId = req.params.id;
+        scansDB.getByScanId(scanId, function(obj) {
+            res = getHeader(res);
+            res.end(JSON.stringify(obj));        
         });
     });
 
