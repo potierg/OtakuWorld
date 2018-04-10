@@ -9,7 +9,7 @@ import { MangasService } from '../mangas.service';
 export class HomeComponent implements OnInit {
 
   private currentMangaId = "5ab63b6c624f4e420cdb0b46";
-  private currentScanId = "";
+  private currentScanId = "5ab7a7c41dcd8a1f00c965f2";
   private printMangas: any = [];
   private totalMangas: Number;
   private searchStr = '';

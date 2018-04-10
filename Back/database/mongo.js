@@ -4,7 +4,7 @@ const MongoClient = require('mongodb').MongoClient;
 var mongoId = require('mongodb');
 const assert = require('assert');
 
-const url = 'mongodb://164.132.106.118:27017';
+const url = 'mongodb://193.70.91.62:27017';
 const dbName = 'OtakuWorld';
 
 module.exports = class Mongo {

@@ -9,5 +9,4 @@ export class ScanService {
   getById(id) {
     return this.http.get('http://127.0.0.1:8080/manga/chapters/'+id);
   }
-
 }

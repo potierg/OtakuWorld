@@ -1,3 +1,19 @@
-<p>
-  scan-list works!
-</p>
+
+<div style="color:white; margin-bottom:-20px; margin-left:50px" *ngFor="let scan of scans">
+
+	<div class="block">
+		<input mdInput type="checkbox">
+		<p class="nom" (click)="showChapters(scan)" >{{scan.nom}}</p>
+	</div>
+
+    <div *ngIf="scan.chapters && scan.show" style="margin-left:25px; margin-bottom:40px">
+		<div *ngFor="let chapter of scan.chapters" style="margin-bottom:-15px">
+			<div class="block">						
+				<input mdInput type="checkbox">
+				<p class="nom">{{chapter.nom}}</p>
+			</div>
+		</div>
+    </div>
+
+</div>
+

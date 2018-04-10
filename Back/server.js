@@ -77,7 +77,6 @@ mongo.connect(() => {
 
 
     app.get('/manga/chapters/:id', (req, res) => {
-        console.log("CHAPTERS");
         var scanId = req.params.id;
         scansDB.getByScanId(scanId, function(obj) {
             res = getHeader(res);
