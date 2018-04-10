@@ -29,7 +29,6 @@ module.exports = class Japscan {
     }
 
     refreshMangaList(cb) {
-
         this.japscanParser.loadMangaList(() => {
             cb();
         });
