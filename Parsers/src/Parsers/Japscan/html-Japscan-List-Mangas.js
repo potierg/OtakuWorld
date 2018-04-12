@@ -4,7 +4,7 @@ var http = require('http');
 module.exports = class HtmlJapscanListMangas {
  
     constructor() {
-        this.siteLink = "http://www.japscan.cc/mangas/";        
+        this.siteLink = "http://www.japscan.cc/mangas/";
     }
 
     getContentUrl (callback) {
@@ -71,7 +71,7 @@ module.exports = class HtmlJapscanListMangas {
                     }
                     row++;
                 }
-                
+
                 if (line == "<div class=\"row\">") {
                     isStart = true;
                     row = 0;
@@ -84,7 +84,6 @@ module.exports = class HtmlJapscanListMangas {
     }
 
     run(callback) {
-        console.log("TEST INIT");
         this.getMangaList(function(listMangas) {
             callback(listMangas);
         })

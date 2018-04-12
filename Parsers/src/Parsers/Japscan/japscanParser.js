@@ -6,6 +6,12 @@ const webSniffer = require('web-sniffer-js');
 const { exec } = require('child_process');
 var fs = require('fs');
 
+const HtmlJapscanListMangas = require('./html-Japscan-List-Mangas');
+const HtmlJapscanDetailManga = require('./html-Japscan-Detail-Manga');
+
+const htmlJapscanListMangas = new HtmlJapscanListMangas();
+const htmlJapscanDetailManga = new HtmlJapscanDetailManga();
+
 module.exports = class JapscanParser {
 
     constructor() {
@@ -25,70 +31,52 @@ module.exports = class JapscanParser {
         this.babyWorkers = new babyWorkers;
         var sniffer = new webSniffer();
         console.log("Get Mangas List");
-        sniffer.parseWithLink(this.siteLink + "/mangas/", (htmlObject) => {
-            var listHtml = sniffer.search("div|[id=\"liste_mangas\"]");
-            var mangaList = [];
 
-            for (var elemHtmlKey in listHtml) {
-                var elemHtml = listHtml[elemHtmlKey];
-                if (elemHtml.content[0] !== "class=\"thead\"" && elemHtml.next[0].next[0].value != null) {
-                    mangaList.push({
-                        nomFR: elemHtml.next[0].next[0].value,
-                        genre: elemHtml.next[1].value,
-                        statut: elemHtml.next[2].value,
-                        last: elemHtml.next[3].next[0].value,
-                        url: this.siteLink + elemHtml.next[0].next[0].content[0].replace("href=\"", "").replace("\"", "")
-                    });
-                }
-            }
+        var t = this;
+        htmlJapscanListMangas.run(function(listMangas) {
+            //console.log(listMangas[0]);
+            console.log("Done Start Download =>", listMangas.length);
+            var mangaLength = listMangas.length;
+            t.babyWorkers.create('listMangas', (worker, manga) => {
 
-            console.log("Done Start Download =>", mangaList.length);
-            var mangaLength = mangaList.length;
-            this.babyWorkers.create('listMangas', (worker, manga) => {
-                if (manga.nomFR != 'Hajime No Ippo') // Exception revoir plus tard
-                    this.getMangaInfos(worker, manga, (savedManga) => {
-                        savedManga.savedInDB(this.mongo, () => {
-                            worker.pop();
-                        });
-                    });
-                else
+                console.log(manga);
+                t.getMangaInfos(worker, manga, function(savedManga) {
                     worker.pop();
-            }).map(mangaList).limit(100).run();
+                });
 
+            }).map(listMangas.slice(0, 1)).limit(50).run();
 
-            this.babyWorkers.listMangas.complete(() => {
-                callback(mangaList);
+            t.babyWorkers.listMangas.complete(() => {
+                return;
             });
-
-            return;
         });
+
+        return ;
     }
 
     getMangaInfos(worker, manga, callback) {
-
-        var sniffer = new webSniffer();
-
-        this.mongo.getMangaByName(manga.nomFR, (info) => {
+        this.mongo.getMangaByName(manga.nom, (info) => {
             var mdb = info;
+            if (!mdb || !mdb.data || !mdb.data.japscan || mdb.data.japscan.last == manga.last) {
+                console.log('Pushed', manga.nom);
+                htmlJapscanDetailManga.run(manga.url, function(details) {
 
-            if (!mdb || !mdb.data || !mdb.data.japscan || mdb.data.japscan.last != manga.last) {
-                console.log('Pushed', manga.nomFR);
-                exec('curl ' + manga.url, (err, stdout, stderr) => {
-                    sniffer.parseWithFile(stdout, (htmlObject) => {
+                    return ;
+                    var savedManga = new MangaModel();
+                    var id = 0;
 
-                        var savedManga = new MangaModel();
-                        var id = 0;
+                    savedManga.loadFromDB(mdb);
+                    savedManga.Nom = savedManga.Nom != "" ? savedManga.Nom : manga.nom;
+                    savedManga.pushUniqueGenre(manga.genre.trim());
+                    savedManga.pushUniqueNomAlternatif(savedManga.Nom);
+                    savedManga.pushUniqueNomAlternatif(manga.nom.toLowerCase());
 
-                        savedManga.loadFromDB(mdb);
-
-                        savedManga.Nom = savedManga.Nom != "" ? savedManga.Nom : manga.nomFR;
-                        savedManga.pushUniqueGenre(manga.genre.trim());
-                        savedManga.pushUniqueNomAlternatif(savedManga.Nom);
-                        savedManga.pushUniqueNomAlternatif(manga.nomFR.toLowerCase());
+                    console.log(savedManga);
+                    return callback();
                         
-                        var synopsisHtml = sniffer.search("div|[class=\"content\"]{0}");
-                        if (synopsisHtml[3] && synopsisHtml[3].value && !savedManga.Synopsis.FR)
-                            savedManga.Synopsis.FR = synopsisHtml[3].value.trim();
+                    /*var synopsisHtml = sniffer.search("div|[class=\"content\"]{0}");
+                    if (synopsisHtml[3] && synopsisHtml[3].value && !savedManga.Synopsis.FR)
+                        savedManga.Synopsis.FR = synopsisHtml[3].value.trim();
 
                         var tableHtml = sniffer.search("div|[class=\"table\"]");
                         var t = sniffer.formatTable(tableHtml);
@@ -133,13 +121,11 @@ module.exports = class JapscanParser {
                         savedManga.data.japscan = { state: state, link: manga.url, last: manga.last };
 
                         callback(savedManga);
-                    });
+                    });*/
                 });
             } else
                 worker.pop();
         });
     }
-
-
 }
 

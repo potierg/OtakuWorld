@@ -46,17 +46,28 @@ var listMangas = null;
 //mongo.getAllMangas((docs) => { console.log(docs) });
 //mongo.addManga({manga: {nom:"ma",auteur:"au",annee:"an",genre:["ge1", "ge2", "ge3"]}});
 
+const JapscanParser = require("./src/Parsers/Japscan/japscanParser");
 const HtmlJapscanListMangas = require('./src/Parsers/Japscan/html-Japscan-List-Mangas');
 const HtmlJapscanDetailManga = require('./src/Parsers/Japscan/html-Japscan-Detail-Manga');
 
+const japscanParser = new JapscanParser(); 
 const htmlJapscanListMangas = new HtmlJapscanListMangas();
-//const htmlJapscanDetailManga = new HtmlJapscanDetailManga();
+const htmlJapscanDetailManga = new HtmlJapscanDetailManga();
 
 app.get('/parser/japscan', (req, res) => {
-
-    htmlJapscanListMangas.run(function(ret) {
+    mongo.connect(() => {
+        japscanParser.setMongo(mongo);
+        japscanParser.loadMangaList(null);
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(ret));        
+        res.end(JSON.stringify(""));
+    });
+    return ;
+    htmlJapscanListMangas.run(function(list) {
+        console.log(list[0].url);
+        htmlJapscanDetailManga.run(list[0].url, function(detail) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(detail));
+        });
     });
 });
 
