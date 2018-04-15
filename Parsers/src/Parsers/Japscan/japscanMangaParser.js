@@ -103,8 +103,6 @@ module.exports = class JapscanMangaParser {
                         }
     
                         var state = 0; // 0: jamais téléchargé | 1: à mettre à jour | 2 : en cours | 3: à jour
-                        if (savedManga.data.japscan && savedManga.data.scanId)
-                            state = 3;
     
                         savedManga.data.japscan = { state: state, link: manga.url, last: manga.last };
                         savedManga.savedInDB(t.mongo, function () {
