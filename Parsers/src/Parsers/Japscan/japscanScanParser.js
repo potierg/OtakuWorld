@@ -119,7 +119,7 @@ module.exports = class JapscanScanParser {
                                     if (isAllScanValid)
                                         manga.data.japscan.state = 2;
                                     else
-                                        manga.data.japscan.state = 0;
+                                        manga.data.japscan.state = 3;
                                     t.mongo.updateManga(manga._id, manga, () => {
                                         return t.downloadScans(callback);
                                     });
