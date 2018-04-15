@@ -28,12 +28,15 @@ module.exports = class HtmlJapscanListMangas {
         });
     }
 
-    getListChapters(nom, callback) {
+    getListChapters(nom, callback, nbTry = 0) {
         var t = this;
         this.getContentUrl().then(function(content) {
             if (content == "") {
+                if (nbTry == 5) {
+                    return callback({});
+                }
                 console.log("=+>ERROR", t.siteLink);
-                return t.getListChapters(nom, callback);
+                return t.getListChapters(nom, callback, nbTry++);
             }
 
             var list = content.substring(content.indexOf("<div id=\"liste_chapitres\">"), content.indexOf("<div class=\"col-1-3\">"));
