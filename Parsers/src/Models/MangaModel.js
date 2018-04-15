@@ -10,7 +10,7 @@ module.exports = class MangaModel {
         this.Statut = '';
         this.SortieInitial = null;
         this.Auteur = [];
-        this.Cover = {};
+        this.Cover = [];
         this.data = {japscan: {}};
     }
 

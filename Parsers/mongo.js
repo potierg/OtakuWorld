@@ -115,12 +115,15 @@ module.exports = class Mongo {
     }
 
     getScanById(id, callback) {
-        this.exec((db) => {
-            const collection = db.collection('Scans');
-            collection.findOne({'mangaId': new mongoId.ObjectId(id)}, function (err, docs) {
-                callback(docs);
+        if (!id)
+            callback(null);
+        else
+            this.exec((db) => {
+                const collection = db.collection('Scans');
+                collection.findOne({'_id': new mongoId.ObjectId(id)}, function (err, docs) {
+                    callback(docs);
+                });
             });
-        });
     }
 
     getScansByScanNull(callback) {

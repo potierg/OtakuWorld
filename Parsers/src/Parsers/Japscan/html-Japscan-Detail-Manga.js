@@ -1,5 +1,6 @@
 'use strict';
 var http = require('http');
+var promise = require('promise');
 
 module.exports = class HtmlJapscanDetailManga {
  
@@ -7,30 +8,32 @@ module.exports = class HtmlJapscanDetailManga {
         this.siteLink = "";
     }
 
-    getContentUrl (callback) {
-        let content = "";
-        http.get(this.siteLink, (resp) => {
-            resp.setEncoding("utf8");
-            resp.on("data", function (chunk) {
-                content += chunk;
-            });
+    getContentUrl() {
+        var t = this;
+        var content = "";
+        return new Promise(function(resolve, reject) {
 
-            var t = this;
-            resp.on("end", function () {
-                content = content.replace("\n", "").replace("\r", "").replace(/\t/g, '');
-                content = content.substring(content.indexOf("<html"));
+            http.get(t.siteLink, function (response) {
+                response.setEncoding("utf8");
+                response.on("data", function (chunk) {
+                    content += chunk;
+                });
 
-                callback(content);
+                response.on("end", function () {
+                    content = content.replace("\n", "").replace("\r", "").replace(/\t/g, '');
+                    content = content.substring(content.indexOf("<html"));
+                    resolve(content);
+                });
             });
         });
     }
 
-    getMangaList(callback) {
+    getMangaInfos(callback) {
         var t = this;
-        this.getContentUrl(function(content) {
+        this.getContentUrl().then(function(content) {
             if (content == "") {
                 console.log("ERROR", t.siteLink);
-                return t.getMangaList(callback);
+                return t.getMangaInfos(callback);
             }
 
             var table = content.substring(content.indexOf("<div class=\"table\">"));
@@ -74,13 +77,17 @@ module.exports = class HtmlJapscanDetailManga {
 
             // SYNOPSIS
 
+            content = content.substring(content.indexOf("<div id=\"synopsis\">"));
+            content = content.split("\n");
+            infoObject.synopsis = content[1].replace("</div>", "");
+
             callback(infoObject);
         });
     }
 
-    run(link, callback) {
+    runGetMangaInfos(link, callback) {
         this.siteLink = link;
-        this.getMangaList(function(detailManga) {
+        this.getMangaInfos(function(detailManga) {
             callback(detailManga);
         })
     }

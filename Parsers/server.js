@@ -3,9 +3,6 @@
 const express = require('express');
 const httpClient = require('./httpClient');
 
-const Japscan = require('./src/Parsers/Japscan/japscan');
-/*const MangaReader = require("./mangareader");
-const MangaHere = require("./mangahere");*/
 const ApiEden = require('./apiEden');
 const Mongo = require('./mongo');
 var timeout = require('connect-timeout'); //express v4
@@ -27,7 +24,6 @@ function haltOnTimedout(req, res, next) {
 const apiEden = new ApiEden();
 
 const client = new httpClient();
-const japscan = new Japscan();
 const mongo = new Mongo();
 //const mangareader = new MangaReader();
 //const mangahere = new MangaHere();
@@ -46,31 +42,37 @@ var listMangas = null;
 //mongo.getAllMangas((docs) => { console.log(docs) });
 //mongo.addManga({manga: {nom:"ma",auteur:"au",annee:"an",genre:["ge1", "ge2", "ge3"]}});
 
-const JapscanParser = require("./src/Parsers/Japscan/japscanParser");
-const HtmlJapscanListMangas = require('./src/Parsers/Japscan/html-Japscan-List-Mangas');
-const HtmlJapscanDetailManga = require('./src/Parsers/Japscan/html-Japscan-Detail-Manga');
+const JapscanMangaParser = require("./src/Parsers/Japscan/japscanMangaParser");
+const JapscanScanParser = require("./src/Parsers/Japscan/japscanScanParser");
 
-const japscanParser = new JapscanParser(); 
-const htmlJapscanListMangas = new HtmlJapscanListMangas();
-const htmlJapscanDetailManga = new HtmlJapscanDetailManga();
+const japscanMangaParser = new JapscanMangaParser(); 
+const japscanScanParser = new JapscanScanParser();
 
-app.get('/parser/japscan', (req, res) => {
-    mongo.connect(() => {
-        japscanParser.setMongo(mongo);
-        japscanParser.loadMangaList(null);
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(""));
-    });
-    return ;
-    htmlJapscanListMangas.run(function(list) {
-        console.log(list[0].url);
-        htmlJapscanDetailManga.run(list[0].url, function(detail) {
+mongo.connect(() => {
+    japscanMangaParser.setMongo(mongo);
+    japscanScanParser.setMongo(mongo);
+    
+    app.get('/parser/japscan', (req, res) => {
+        apiEden.reset(() => {
+            japscanMangaParser.setEden(apiEden);
+            japscanMangaParser.downloadMangaList(null);
             res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify(detail));
+            res.end(JSON.stringify(""));
         });
     });
+
+    app.get('/parser/japscan/scans', (req, res) => {
+        japscanScanParser.downloadScans(function (result) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(result));    
+        });
+    });    
 });
 
+app.listen(PORT, HOST);
+console.log(`Running on http://${HOST}:${PORT}`);
+
+return ;
 
 app.get('/run/japscan', (req, res) => {
     mongo.connect(() => {
