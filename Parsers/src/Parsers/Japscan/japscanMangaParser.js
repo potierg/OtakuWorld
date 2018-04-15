@@ -61,7 +61,7 @@ module.exports = class JapscanMangaParser {
                         var savedManga = new MangaModel();                        
                         if (mdb)
                             savedManga.loadFromDB(mdb)
- 
+                            
                         var id = 0;
     
                         savedManga.loadFromDB(mdb);
@@ -105,7 +105,14 @@ module.exports = class JapscanMangaParser {
     
                         var state = 0; // 0: jamais téléchargé | 1: à mettre à jour | 2 : en cours | 3: à jour
     
+                        var idScan = null;
+                        if (savedManga.data.japscan.scanId)
+                           idScan = savedManga.data.japscan.scanId;
+
                         savedManga.data.japscan = { state: state, link: manga.url, last: manga.last };
+                        if (idScan)
+                            savedManga.data.japscan.scanId = idScan;
+
                         savedManga.savedInDB(t.mongo, function () {
                             console.log('Pushed', manga.nom);
                             resolve();
