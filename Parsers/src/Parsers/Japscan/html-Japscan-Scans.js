@@ -13,13 +13,15 @@ module.exports = class HtmlJapscanScans {
     getContentUrl(link) {
         var t = this;
         return new Promise(function(resolve, reject) {
-            exec('curl ' + link, (err, stdout, stderr) => {
+            exec('curl -L ' + link, (err, stdout, stderr) => {
                 resolve(stdout);
             });
         });
     }
 
     reduceList(list) {
+        if (!list || !list[0] || !list[list.length - 1])
+            return {pages:list};
         var firstElement = list[0];
         var lastElement = list[list.length - 1];
         var index = 0;
@@ -38,6 +40,8 @@ module.exports = class HtmlJapscanScans {
         var newList = [];
 
         list.forEach(link => {
+            if (!link)
+                return {pages:list};            
             if (link.indexOf(templateLink) === -1)
                 isOkForAll = false;
             newList.push(link.replace(templateLink, ""));
@@ -51,10 +55,13 @@ module.exports = class HtmlJapscanScans {
 
     downloadImageFromOnePage(link, callback) {
         var t = this;
+        if (!link) {
+            return callback(null);
+        }
         this.getContentUrl(link).then(function(content) {
 
             if (content == "") {
-                console.log("ERROR", link);
+                console.log("==> ERROR", link);
                 return t.downloadImageFromOnePage(callback);
             }
 
@@ -73,7 +80,7 @@ module.exports = class HtmlJapscanScans {
         this.getContentUrl(this.siteLink).then(function(content) {
 
             if (content == "") {
-                console.log("ERROR", t.siteLink);
+                console.log("=> ERROR", t.siteLink);
                 return t.getScans(callback);
             }
 

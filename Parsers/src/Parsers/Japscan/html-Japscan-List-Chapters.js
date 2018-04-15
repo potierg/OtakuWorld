@@ -29,9 +29,10 @@ module.exports = class HtmlJapscanListMangas {
     }
 
     getListChapters(nom, callback) {
+        var t = this;
         this.getContentUrl().then(function(content) {
             if (content == "") {
-                console.log("ERROR", t.siteLink);
+                console.log("=+>ERROR", t.siteLink);
                 return t.getListChapters(nom, callback);
             }
 

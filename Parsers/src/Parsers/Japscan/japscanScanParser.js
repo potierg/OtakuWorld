@@ -22,14 +22,14 @@ module.exports = class JapscanScanParser {
     }
 
     downloadScans(callback) {
-        var t = this;
+        var th = this;
         this.mongo.getMangaNotUpdate((manga) => {
             if (manga !== null) {
                 console.log("Download", manga.Nom, "Scans");
                 manga.data.japscan.state = 1;
-                t.mongo.updateManga(manga._id, manga, () => {
+                th.mongo.updateManga(manga._id, manga, () => {
                     var idScan = manga.data.japscan.scanId ? manga.data.japscan.scanId : null;
-                    t.mongo.getScanById(idScan, (savedScans) => {
+                    th.mongo.getScanById(idScan, (savedScans) => {
                         
                         var savedTomes = savedScans ? savedScans.scans : null;
 
@@ -114,14 +114,14 @@ module.exports = class JapscanScanParser {
                 
                             babyWorkers.downloadTome.complete(() => {
 
-                                t.mongo.updateScans({ mangaId: manga._id, scans: listTomes }, (id) => {
+                                th.mongo.updateScans({ mangaId: manga._id, scans: listTomes }, (id) => {
                                     manga.data.japscan.scanId = id;
                                     if (isAllScanValid)
                                         manga.data.japscan.state = 2;
                                     else
                                         manga.data.japscan.state = 3;
-                                    t.mongo.updateManga(manga._id, manga, () => {
-                                        return t.downloadScans(callback);
+                                    th.mongo.updateManga(manga._id, manga, () => {
+                                        return th.downloadScans(callback);
                                     });
                                 });
                             });

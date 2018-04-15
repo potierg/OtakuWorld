@@ -55,7 +55,7 @@ module.exports = class JapscanMangaParser {
 
             t.mongo.getMangaByName(manga.nom, (info) => {
                 var mdb = info;
-                if (!mdb || !mdb.data || !mdb.data.japscan || mdb.data.japscan.last != manga.last) {
+                if (!mdb || !mdb.data || !mdb.data.japscan || (mdb.data.japscan.last != manga.last) && mdb.data.japscan.state != 42) {
                     htmlJapscanDetailManga.runGetMangaInfos(manga.url, function(details) {
     
                         var savedManga = new MangaModel();                        
