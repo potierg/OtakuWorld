@@ -58,9 +58,10 @@ module.exports = class JapscanMangaParser {
                 if (!mdb || !mdb.data || !mdb.data.japscan || mdb.data.japscan.last != manga.last) {
                     htmlJapscanDetailManga.runGetMangaInfos(manga.url, function(details) {
     
-                        var savedManga = mdb;
-                        if (!mdb)
-                           savedManga= new MangaModel();
+                        var savedManga = new MangaModel();                        
+                        if (mdb)
+                            savedManga.loadFromDB(mdb)
+ 
                         var id = 0;
     
                         savedManga.loadFromDB(mdb);
