@@ -12,13 +12,19 @@ const htmlJapscanScans = new HtmlJapscanScans();
 
 module.exports = class JapscanScanParser {
 
-    constructor() {
+    constructor(mongo) {
         this.siteLink = "http://www.japscan.cc";
-        this.mongo = null;
+        this.mongo = mongo;
     }
 
-    setMongo(mongo) {
-        this.mongo = mongo;
+    isNullPresent(element) {
+        if (element.pages == null)
+            return true;
+        for (var key in element.pages) {
+            if (element.pages[key] == null)
+                return true;
+        }
+        return false;
     }
 
     downloadScans(callback) {
@@ -76,40 +82,45 @@ module.exports = class JapscanScanParser {
                             var babyWorkers = new BabyWorkers;
                             babyWorkers.create('downloadTome', (worker, tome) => {
 
-                                if (tome.chapters) {
-                                    worker.create('downloadChapter', (worker2, chapter) => {
-                                        if (!chapter.pages && !chapter.flag) {
-                                            htmlJapscanScans.run(chapter.link, function(res) {
-                                                delete chapter.link;
-                                                if (res.link)
-                                                    chapter.link = res.link;
-                                                chapter.pages = res.pages;
+                                if (!th.isNullPresent(tome)) {
+                                    worker.pop();
+                                }
+                                else {
+                                    if (tome.chapters) {
+                                        worker.create('downloadChapter', (worker2, chapter) => {
+                                            if ((!chapter.pages && !chapter.flag) || th.isNullPresent(chapter)) {
+                                                htmlJapscanScans.run(chapter.link, function(res) {
+                                                    delete chapter.link;
+                                                    if (res.link)
+                                                        chapter.link = res.link;
+                                                    chapter.pages = res.pages;
+                                                    worker2.pop();
+                                                });    
+                                            } else if (chapter.flag) {
+                                                isAllScanValid = false;
                                                 worker2.pop();
-                                            });    
-                                        } else if (chapter.flag) {
-                                            isAllScanValid = false;
-                                            worker2.pop();
-                                        } else
-                                            worker2.pop();
-                                    }).map(tome.chapters).limit(1).run();
+                                            } else
+                                                worker2.pop();
+                                        }).map(tome.chapters).limit(1).run();
 
-                                    worker.downloadChapter.complete(() => {
+                                        worker.downloadChapter.complete(() => {
+                                            worker.pop();
+                                        });
+                
+                                    } else if ((!tome.pages && !tome.flag) || th.isNullPresent(tome)){
+                                        htmlJapscanScans.run(tome.link, function(res) {
+                                            delete tome.link;
+                                            if (res.link)
+                                                tome.link = res.link;
+                                            tome.pages = res.pages;
+                                            worker.pop();
+                                        });
+                                    } else if (tome.flag) {
+                                        isAllScanValid = false;
                                         worker.pop();
-                                    });
-            
-                                } else if (!tome.pages && !tome.flag){
-                                    htmlJapscanScans.run(tome.link, function(res) {
-                                        delete tome.link;
-                                        if (res.link)
-                                            tome.link = res.link;
-                                        tome.pages = res.pages;
+                                    } else
                                         worker.pop();
-                                    });
-                                } else if (tome.flag) {
-                                    isAllScanValid = false;
-                                    worker.pop();
-                                } else
-                                    worker.pop();
+                                }
                             }).map(listTomes).limit(1).run();
                 
                             babyWorkers.downloadTome.complete(() => {

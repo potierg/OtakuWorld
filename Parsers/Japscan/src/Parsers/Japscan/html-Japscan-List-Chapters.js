@@ -1,6 +1,7 @@
 'use strict';
 var http = require('http');
 var promise = require('promise');
+const { exec } = require('child_process');
 
 module.exports = class HtmlJapscanListMangas {
  
@@ -10,20 +11,9 @@ module.exports = class HtmlJapscanListMangas {
 
     getContentUrl() {
         var t = this;
-        var content = "";
         return new Promise(function(resolve, reject) {
-
-            http.get(t.siteLink, function (response) {
-                response.setEncoding("utf8");
-                response.on("data", function (chunk) {
-                    content += chunk;
-                });
-
-                response.on("end", function () {
-                    content = content.replace("\n", "").replace("\r", "").replace(/\t/g, '');
-                    content = content.substring(content.indexOf("<html"));
-                    resolve(content);
-                });
+            exec('curl -L ' + t.siteLink, (err, stdout, stderr) => {
+                resolve(stdout);
             });
         });
     }

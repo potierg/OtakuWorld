@@ -125,7 +125,7 @@ module.exports = class HtmlJapscanScans {
     
             list.forEach(line => {
                 line = line.trim();
-                if (line.indexOf("<option") === 0 && line.indexOf("IMG") === -1) {
+                if (line.indexOf("<option") === 0 && line.indexOf("IMG__") === -1) {
                     if (isInOneDownload) {
                         var page_uri = line.substring(line.indexOf("data-img=\"") + 10);
                         page_uri = page_uri.substring(0, page_uri.indexOf("\" value=\""));

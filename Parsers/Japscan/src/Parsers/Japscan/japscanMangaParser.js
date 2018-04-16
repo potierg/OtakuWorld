@@ -12,17 +12,10 @@ const htmlJapscanDetailManga = new HtmlJapscanDetailManga();
 
 module.exports = class JapscanMangaParser {
 
-    constructor() {
+    constructor(mongo, eden) {
         this.siteLink = "http://www.japscan.cc";
-        this.mongo = null;
-    }
-
-    setEden(eden) {
-        this.Eden = eden;
-    }
-
-    setMongo(mongo) {
         this.mongo = mongo;
+        this.Eden = eden;
     }
 
     downloadMangaList(callback) {

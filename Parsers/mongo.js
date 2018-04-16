@@ -3,6 +3,7 @@
 const MongoClient = require('mongodb').MongoClient;
 var mongoId = require('mongodb');
 const assert = require('assert');
+var promise = require('promise');
 
 const url = 'mongodb://164.132.106.118:27017';
 const dbName = 'OtakuWorld';
@@ -14,12 +15,15 @@ module.exports = class Mongo {
         this.client = null;
     }
 
-    connect(callback) {
-        MongoClient.connect(url, (err, client) => {
-            assert.equal(null, err);
-            this.db = client.db(dbName);
-            console.log("Connected successfully to server");
-            callback();
+    connect() {
+        var t = this;
+        return new Promise(function(resolve, reject) {
+            MongoClient.connect(url, (err, client) => {
+                assert.equal(null, err);
+                t.db = client.db(dbName);
+                console.log("Connected successfully to server");
+                resolve();
+            });
         });
     }
 
@@ -34,6 +38,10 @@ module.exports = class Mongo {
             console.log("ERROR MONGO");
         }
     }
+
+
+    /// TO DISPATCH
+
 
     getAllMangas(callback) {
         this.exec((db) => {
