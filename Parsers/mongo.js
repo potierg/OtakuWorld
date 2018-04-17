@@ -5,7 +5,7 @@ var mongoId = require('mongodb');
 const assert = require('assert');
 var promise = require('promise');
 
-const url = 'mongodb://164.132.106.118:27017';
+const url = 'mongodb://193.70.91.62:27017';
 const dbName = 'OtakuWorld';
 
 module.exports = class Mongo {

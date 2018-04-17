@@ -38,15 +38,14 @@ module.exports = class JapscanScanParser {
                     th.mongo.getScanById(idScan, (savedScans) => {
                         
                         var savedTomes = savedScans ? savedScans.scans : null;
-
                         htmlJapscanListChapters.run(manga.data.japscan.link, manga.Nom, function(listTomes) {
-
+                            
                             if (savedScans) {
                                 for (var keyTome in listTomes) {
 
                                     var goodSaveTome = null;
                                     for (var keySavedTome in savedTomes) {
-                                        if (listTomes[keyTome].nb == savedTomes[keySavedTome].nb)
+                                        if (savedTomes[keySavedTome] && listTomes[keyTome].nb == savedTomes[keySavedTome].nb)
                                         {
                                             goodSaveTome = savedTomes[keySavedTome];
                                             break;
@@ -57,7 +56,7 @@ module.exports = class JapscanScanParser {
 
                                         for (var keyChapter in listTomes[keyTome].chapters) {                                        
                                             var goodSaveChapter = null;
-                                            if (goodSaveTome.chapters) {
+                                            if (goodSaveTome && goodSaveTome.chapters) {
                                                 for (var keySavedChapter in goodSaveTome.chapters) {
                                                     if (listTomes[keyTome].chapters[keyChapter].nb == goodSaveTome.chapters[keySavedChapter].nb)
                                                     {
@@ -79,7 +78,6 @@ module.exports = class JapscanScanParser {
                                     }
                                 }
                             }
-
                             var isAllScanValid = true;
                             var babyWorkers = new BabyWorkers;
                             babyWorkers.create('downloadTome', (worker, tome) => {

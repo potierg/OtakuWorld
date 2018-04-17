@@ -45,6 +45,9 @@ module.exports = class JapscanMangaParser {
     getMangaInfos(manga) {
         var t = this;
         return new Promise(function(resolve, reject) {
+            if (!manga) {
+                return resolve();
+            }
 
             t.mongo.getMangaByName(manga.nom, (info) => {
                 var mdb = info;
