@@ -7,8 +7,8 @@
         </div>
         <div class="image-crop">
             <div class="">Nouv.</div>
-                <img *ngIf="manga.Cover.eden" [src]="manga.Cover.eden">
-                <img *ngIf="!manga.Cover.eden" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
+                <img *ngIf="manga.Cover.length > 0" [src]="manga.Cover[0].img">
+                <img *ngIf="manga.Cover.length == 0" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
             </div>
         <div class="episode-details poster-details">
             <h2><span class="nb-remainging-episodes">{{getLastChapString(manga)}}</span></h2>

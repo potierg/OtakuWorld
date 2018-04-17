@@ -8,8 +8,10 @@ import { MangasService } from '../mangas.service';
 })
 export class HomeComponent implements OnInit {
 
-  private currentMangaId = "5ab63b6c624f4e420cdb0b46";
-  private currentScanId = "5ab7a7c41dcd8a1f00c965f2";
+  private currentMangaId = "";
+  private currentScanId = "";
+  private currentScanObj = null;
+
   private printMangas: any = [];
   private totalMangas: Number;
   private searchStr = '';
@@ -28,6 +30,8 @@ export class HomeComponent implements OnInit {
 
   public refreshMangas() {
     this.onLoad = true;
+    this.currentMangaId = "";
+    this.currentScanId = "";
     if (this.searchStr == '') {
       this.mangasService.getAll(this.currentPage, this.limit).subscribe(datas => {
         this.onLoad = false;
@@ -46,10 +50,17 @@ export class HomeComponent implements OnInit {
 
   public viewManga(id) {
     this.currentMangaId = id;
+    this.currentScanId = "";
+    this.currentScanObj = null;
   }
 
   public viewChapterList(id) {
     this.currentScanId = id;
+    this.currentScanObj = null;
+  }
+
+  public viewScan(nb) {
+    this.currentScanObj = nb;
   }
 
   setPage(event): void {

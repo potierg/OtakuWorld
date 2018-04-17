@@ -84,12 +84,14 @@ mongo.connect(() => {
         });
     });
 
-    app.get('/manga/:id/chapters/:numero/scans', (req, res) => {
+    app.get('/manga/:id/chapters/:tome/:chapter/scans', (req, res) => {
         var mangaId = req.params.id;
-        var numero = req.params.numero;
+        var tome = req.params.tome;
+        var chapter = req.params.chapter;
+
         scansDB.connect(() => {
-            scansDB.getScanWithIdAndNumero(mangaId, numero, function(obj) {
-                res.setHeader('Content-Type', 'application/json');
+            scansDB.getScanWithIdAndNumero(mangaId, tome, chapter, function(obj) {
+                res = getHeader(res);
                 res.end(JSON.stringify(obj));        
             });
         });

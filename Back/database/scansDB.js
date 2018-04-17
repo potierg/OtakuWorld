@@ -30,25 +30,25 @@ module.exports = class ScansDB {
         });
     }
 
-    getScanWithIdAndNumero(mangaId, numero, callback) {
+    getScanWithIdAndNumero(mangaId, tome, chapter, callback) {
         this.getCollection(function (collection) {
 
             collection.aggregate([
-                { '$match': { 'mangaId': new mongoId.ObjectId(mangaId) } },
+                { '$match': { '_id': new mongoId.ObjectId(mangaId) } },
                 { '$unwind': '$scans' },
-                { '$match': { 'scans.numero': Number.parseFloat(numero) } }
+                { '$match': { 'scans.nb': Number.parseFloat(tome) } }
             ]).toArray(function (err, docs) {
-                if (docs[0])
-                    return callback(docs[0].scans);
-
+                if (docs[0] && !docs[0].scans.chapters) {
+                    return callback({link:docs[0].link, scans: docs[0].scans});                    
+                }
                 collection.aggregate([
-                    { '$match': { 'mangaId': new mongoId.ObjectId(mangaId) } },
+                    { '$match': { '_id': new mongoId.ObjectId(mangaId) } },
                     { '$unwind': '$scans' },
                     { '$unwind': '$scans.chapters' },
-                    { '$match': { 'scans.chapters.numero': Number.parseFloat(numero) } },
+                    { '$match': { 'scans.chapters.nb': Number.parseFloat(chapter) } },
                 ]).toArray(function (err, docs) {
                     if (docs[0])
-                        return callback(docs[0].scans.chapters);
+                        return callback({link:docs[0].scans.chapters.link, scans: docs[0].scans.chapters});
                     return callback({});
                 });
 

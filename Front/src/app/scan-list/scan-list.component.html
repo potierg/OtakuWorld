@@ -1,16 +1,19 @@
+<a href="javascript:;" (click)="back()"><p style="margin-left:15px; margin-top:-15px; color:white; font-weight:bold; font-size:30px">
+    Retour</p></a>
 
 <div style="color:white; margin-bottom:-20px; margin-left:50px" *ngFor="let scan of scans">
 
 	<div class="block">
-		<input mdInput type="checkbox">
-		<p class="nom" (click)="showChapters(scan)" >{{scan.nom}}</p>
-	</div>
+			<i *ngIf="scan.chapters && !scan.show" class="material-icons">keyboard_arrow_down</i>
+			<i *ngIf="scan.chapters && scan.show" class="material-icons">keyboard_arrow_up</i>
+			<a *ngIf="scan.chapters" href="javascript:;" class="nom" (click)="showChapters(scan)" >{{scan.nom}}</a>
+			<a *ngIf="!scan.chapters" href="javascript:;" class="nom" (click)="viewTome(scan.nb)" >{{scan.nom}}</a>
+		</div>
 
     <div *ngIf="scan.chapters && scan.show" style="margin-left:25px; margin-bottom:40px">
 		<div *ngFor="let chapter of scan.chapters" style="margin-bottom:-15px">
-			<div class="block">						
-				<input mdInput type="checkbox">
-				<p class="nom">{{chapter.nom}}</p>
+			<div class="block" style="margin-left:50px">
+				<a href="javascript:;" (click)="viewChapter(scan.nb, chapter.nb)" class="nom">{{chapter.nom}}</a>
 			</div>
 		</div>
     </div>

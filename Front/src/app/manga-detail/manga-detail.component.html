@@ -1,14 +1,15 @@
 
     <div class="manga" *ngIf="!onLoad">
-        <a href="javascript:;" (click)="back()"><p style="margin-left:20px; color:white; font-weight:bold; font-size:40px">Mangas</p></a>
+        <a href="javascript:;" (click)="back()"><p style="margin-left:15px; margin-top:-15px; color:white; font-weight:bold; font-size:30px">
+                Retour</p></a>
         <div class="header">
             <h1>{{manga.Nom}}</h1>
             <i class="imgmenu spacemenu material-icons">file_download</i>
             <i class="imgmenu material-icons">star_border</i>
         </div>
         <div class="mangadescription">
-            <img *ngIf="manga.Cover.eden" class="imgmanga" [src]="manga.Cover.eden">
-            <img *ngIf="!manga.Cover.eden" class="imgmanga" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
+            <img *ngIf="manga.Cover.length > 0" class="imgmanga" [src]="manga.Cover[0].img">
+            <img *ngIf="manga.Cover.length == 0" class="imgmanga" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
             <div class="mangainfo">
                 <div>
                     <p class="info">Auteur : {{manga.Auteur[0]}}</p>

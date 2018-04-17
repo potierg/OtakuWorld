@@ -38,7 +38,8 @@
     <div [ngClass]="currentMangaId == '' ? 'content' : 'contentManga'">
         <app-manga-list *ngIf="printMangas.length > 0 && !onLoad && currentMangaId == ''" [listMangaPrint]="printMangas" (change)="viewManga($event)"></app-manga-list>
         <app-manga-detail *ngIf="!onLoad && currentMangaId != '' && currentScanId == ''"  [mangaId]="currentMangaId" (returnManga)="viewManga($event)" (viewChapterList)="viewChapterList($event)"></app-manga-detail>
-        <app-scan-list *ngIf="!onLoad && currentMangaId != '' && currentScanId != ''" [scanId]="currentScanId" (returnMangaDetail)="viewChapterList($event)"></app-scan-list>
+        <app-scan-list *ngIf="!onLoad && currentMangaId != '' && currentScanId != '' && !currentScanObj" [scanId]="currentScanId" (returnMangaDetail)="viewChapterList($event)" (viewScan)="viewScan($event)"></app-scan-list>
+        <app-scan-view *ngIf="!onLoad && currentMangaId != '' && currentScanId != '' && currentScanObj" [scanId]="currentScanId" [scanObj]="currentScanObj" (returnMangaList)="viewChapterList(currentScanId)"></app-scan-view>
         <div *ngIf="onLoad">LOADING...</div>
     </div>
 

@@ -17,6 +17,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import { MangaDetailComponent } from './manga-detail/manga-detail.component';
 import { ScanListComponent } from './scan-list/scan-list.component';
 import { ScanService } from './scan.service';
+import { ScanViewComponent } from './scan-view/scan-view.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { ScanService } from './scan.service';
     MangaListComponent,
     MangaDetailComponent,
     ScanListComponent,
+    ScanViewComponent,
   ],
   imports: [
     BrowserModule,
