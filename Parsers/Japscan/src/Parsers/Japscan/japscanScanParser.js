@@ -57,12 +57,14 @@ module.exports = class JapscanScanParser {
 
                                         for (var keyChapter in listTomes[keyTome].chapters) {                                        
                                             var goodSaveChapter = null;
-                                            for (var keySavedChapter in goodSaveTome.chapters) {
-                                                if (listTomes[keyTome].chapters[keyChapter].nb == goodSaveTome.chapters[keySavedChapter].nb)
-                                                {
-                                                    goodSaveChapter = goodSaveTome.chapters[keySavedChapter];
-                                                    break;
-                                                }
+                                            if (goodSaveTome.chapters) {
+                                                for (var keySavedChapter in goodSaveTome.chapters) {
+                                                    if (listTomes[keyTome].chapters[keyChapter].nb == goodSaveTome.chapters[keySavedChapter].nb)
+                                                    {
+                                                        goodSaveChapter = goodSaveTome.chapters[keySavedChapter];
+                                                        break;
+                                                    }
+                                                }    
                                             }
                                             if (goodSaveChapter) {
                                                 if (goodSaveChapter.link)
@@ -94,6 +96,7 @@ module.exports = class JapscanScanParser {
                                                     if (res.link)
                                                         chapter.link = res.link;
                                                     chapter.pages = res.pages;
+                                                    chapter.date = new Date();
                                                     worker2.pop();
                                                 });    
                                             } else if (chapter.flag) {
@@ -113,6 +116,7 @@ module.exports = class JapscanScanParser {
                                             if (res.link)
                                                 tome.link = res.link;
                                             tome.pages = res.pages;
+                                            tome.date = new Date();
                                             worker.pop();
                                         });
                                     } else if (tome.flag) {

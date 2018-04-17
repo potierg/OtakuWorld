@@ -77,7 +77,7 @@ module.exports = class HtmlJapscanListMangas {
                 }
             }
 
-            if (tomes[0].nb == -1)
+            if (tomes[0] && tomes[0].nb == -1)
                 tomes[0].nb = tomes[1] ? tomes[1].nb + 1 : 1;
 
             tomes = tomes.reverse();
