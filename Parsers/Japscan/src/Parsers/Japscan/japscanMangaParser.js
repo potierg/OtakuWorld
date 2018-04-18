@@ -42,6 +42,25 @@ module.exports = class JapscanMangaParser {
         return ;
     }
 
+    resetVO(callback) {
+        this.mongo.getVoMangas((mangas) => {
+
+            this.babyWorkers = new babyWorkers;
+            this.babyWorkers.create('restart', (worker, manga) => {
+                manga.data.japscan.state = 0;
+                this.mongo.updateManga(manga._id, manga, () => {
+                    worker.pop();
+                });
+
+            }).map(mangas).limit(1).run();
+
+            this.babyWorkers.restart.complete(() => {
+                callback();
+            });
+        });
+    }
+
+
     getMangaInfos(manga) {
         var t = this;
         return new Promise(function(resolve, reject) {

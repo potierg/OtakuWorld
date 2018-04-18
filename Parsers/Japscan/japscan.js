@@ -22,7 +22,9 @@ async function runJapscan() {
 
 	japscanMangaParser.downloadMangaList(() => {
 		japscanScanParser.downloadScans(function (result) {
-			process.exit();
+			japscanMangaParser.resetVO(function() {
+				process.exit();				
+			});
 		});
 	});
 }

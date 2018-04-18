@@ -62,7 +62,7 @@ module.exports = class HtmlJapscanScans {
 
             if (content == "") {
                 console.log("==> ERROR", link);
-                return t.downloadImageFromOnePage(callback);
+                return t.downloadImageFromOnePage(link, callback);
             }
 
             var linkImg = null;

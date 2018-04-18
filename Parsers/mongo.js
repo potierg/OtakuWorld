@@ -77,7 +77,7 @@ module.exports = class Mongo {
                     });
                 }
             });
-        })
+        });
     }
 
     deleteScansByMangaId(mangaId) {
@@ -86,6 +86,16 @@ module.exports = class Mongo {
 
             collection.deleteOne({'mangaId': new mongoId.ObjectId(mangaId)});
         })
+    }
+
+    getVoMangas(callback) {
+        this.exec((db) => {
+            const collection = db.collection('Mangas');
+
+            collection.find({"data.japscan.state":3}).toArray(function (err, docs) {
+                callback(docs);
+            });
+        });
     }
 
     addManga(manga, cb) {
