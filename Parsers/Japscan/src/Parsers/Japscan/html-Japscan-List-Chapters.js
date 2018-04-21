@@ -58,7 +58,7 @@ module.exports = class HtmlJapscanListMangas {
                         tomes.push({nom:null, nb:-1, chapters:[], isNoDetail: true});
                     var nom = val.indexOf(":") !== -1 ? val.substring(val.indexOf(":") + 2) : null;
                     tomes[tomes.length - 1].chapters.push({nom: nom, nb: number, link:link});
-                    if (nom.indexOf("Attention: RAW") !== -1) {
+                    if (nom && nom.indexOf("Attention: RAW") !== -1) {
                         tomes[tomes.length - 1].chapters[ tomes[tomes.length - 1].chapters.length - 1].flag = 'RAW';
                     }
                 }
