@@ -88,7 +88,7 @@ module.exports = class JapscanScanParser {
                                 else {
                                     if (tome.chapters) {
                                         worker.create('downloadChapter', (worker2, chapter) => {
-                                            if ((!chapter.pages && !chapter.flag) || th.isNullPresent(chapter)) {
+                                            if ((!chapter.pages && !chapter.flag) || (th.isNullPresent(chapter) && !chapter.flag)) {
                                                 htmlJapscanScans.run(chapter.link, function(res) {
                                                     delete chapter.link;
                                                     if (res.link)
