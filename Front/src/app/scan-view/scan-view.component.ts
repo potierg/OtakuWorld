@@ -17,6 +17,7 @@ export class ScanViewComponent implements OnInit {
   scans = null;
   listPages = [];
   currentPage = 0;
+  currentPicture = null;
 
   constructor(private scanService: ScanService) { }
 
@@ -29,8 +30,28 @@ export class ScanViewComponent implements OnInit {
       for (var key in this.scans.pages) {
         this.scans.pages[key] = this.scans.link + this.scans.pages[key];
       }
-      this.onLoad = false;
+      this.loadImg();
       console.log(this.scans, this.onLoad);
+    });
+  }
+
+  createImageFromBlob(image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+       this.currentPicture = reader.result;
+    }, false);
+
+    if (image) {
+       reader.readAsDataURL(image);
+    }
+}
+  loadImg() {
+    this.onLoad = true;
+    this.scanService.getImgWithLink(this.scans.pages[this.currentPage]).subscribe(data => {
+      this.createImageFromBlob(data);
+      this.onLoad = false;
+    }, error => {
+      this.onLoad = false;
     });
   }
 

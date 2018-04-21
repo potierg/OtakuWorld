@@ -3,7 +3,5 @@
 
     {{onLoad}}
 <div *ngIf="!onLoad">
-  <img *ngIf="scans && scans.pages && scans.pages[0]" [src]="scans.pages[0]">
+  <img *ngIf="scans && scans.pages && scans.pages[0]" [src]="currentPicture">
 </div>
-
-<img src="http://ccc.blue15cdn.net/lel/Anima/Scan-Anima-Tome-3-VF/001.jpg">

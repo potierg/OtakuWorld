@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ResponseContentType, RequestOptions } from '@angular/http';
 
 @Injectable()
 export class ScanService {
@@ -20,4 +21,15 @@ export class ScanService {
 
     return this.http.get(url);
   }
+
+	getImgWithLink(imageUrl) {
+		let header = {
+			"Content-Type":	"img",
+			"Pragma": "no-cache"
+		};
+		
+    	return this.http.get(imageUrl, {responseType: "blob", headers:header}).map(blob => {
+			return blob;
+		});
+  	}
 }

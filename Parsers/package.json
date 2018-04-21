@@ -14,6 +14,7 @@
     "curlrequest": "^1.0.1",
     "decode-html": "^2.0.0",
     "express": "^4.16.3",
+    "mongodb": "^3.0.7",
     "promise": "^8.0.1",
     "request": "^2.85.0",
     "web-sniffer-js": "^1.1.6",
