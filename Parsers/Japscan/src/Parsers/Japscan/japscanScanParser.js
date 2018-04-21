@@ -108,7 +108,7 @@ module.exports = class JapscanScanParser {
                                             worker.pop();
                                         });
                 
-                                    } else if ((!tome.pages && !tome.flag) || th.isNullPresent(tome)){
+                                    } else if ((!tome.pages && !tome.flag) || (th.isNullPresent(tome) && !tome.flag)){
                                         htmlJapscanScans.run(tome.link, function(res) {
                                             delete tome.link;
                                             if (res.link)
