@@ -61,6 +61,8 @@ module.exports = class HtmlJapscanListMangas {
                     if (nomChap && nomChap.indexOf("Attention: RAW") !== -1) {
                         tomes[tomes.length - 1].chapters[ tomes[tomes.length - 1].chapters.length - 1].flag = 'RAW';
                     }
+                    if (val.indexOf("Tome") !== -1)
+                        tomes[tomes.length - 1].chapters[ tomes[tomes.length - 1].chapters.length - 1].isTome = true;
                 }
                 if (line.indexOf("<span class=\"") !== -1) {
                     var flag = line.substring(line.indexOf("\">") + 2);
@@ -72,8 +74,10 @@ module.exports = class HtmlJapscanListMangas {
             }
 
             for (var key in tomes) {
-                if (tomes[key].chapters.length == 1 && !tomes[key].isNoDetail) {
+                if (tomes[key].chapters.length == 1 && !tomes[key].isNoDetail && tomes[key].isTome) {
                     tomes[key].link = tomes[key].chapters[0].link;
+                    if (tomes[key].chapters[0].flag)
+                        tomes[key].flag = tomes[key].chapters[0].flag;
                     delete tomes[key].chapters;
                 }
                 else {
@@ -84,7 +88,7 @@ module.exports = class HtmlJapscanListMangas {
             if (tomes[0] && tomes[0].nb == -1)
                 tomes[0].nb = tomes[1] ? tomes[1].nb + 1 : 1;
 
-            tomes = tomes.reverse();                
+                tomes = tomes.reverse();
             callback(tomes);
         });
     }
