@@ -5,7 +5,7 @@ var mongoId = require('mongodb');
 const assert = require('assert');
 var promise = require('promise');
 
-const url = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017';
+const url = 'mongodb://193.70.91.62:27017';
 const dbName = 'OtakuWorld';
 
 module.exports = class Mongo {
@@ -126,7 +126,7 @@ module.exports = class Mongo {
     getMangaNotUpdate(callback) {
         this.exec((db) => {
             const collection = db.collection('Mangas');
-            collection.findOne({$or: [{'data.japscan.state': 21}]}, function (err, docs) {
+            collection.findOne({$or: [{'data.japscan.state': 0}]}, function (err, docs) {
                 callback(docs);
             });
         });
