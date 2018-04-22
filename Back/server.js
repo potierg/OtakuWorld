@@ -6,7 +6,6 @@ var MongoDB = require('./database/mongo');
 var MangasDB = require('./database/mangasDB');
 var ScansDB = require('./database/scansDB');
 
-
 module.exports = app;
 
 const timeout = require('connect-timeout'); //express v4
@@ -21,6 +20,12 @@ const HOST = '0.0.0.0';
 app.use(timeout(1200000));
 app.use(haltOnTimedout);
 
+var bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+const { exec } = require('child_process');
+
 function haltOnTimedout(req, res, next) {
     if (!req.timedout) next();
 }
@@ -33,6 +38,18 @@ function getHeader(res) {
     res.header('Content-Type', 'application/json');
     return res;
 }
+
+
+app.post('/getImg', (req, res) => {
+    var link = req.body.link;
+
+    exec('curl -L ' + link, (err, stdout, stderr) => {
+        res = getHeader(res);
+        res.header('Content-Type', 'image/jpeg');
+        res.end(stdout, 'binary');
+    });
+});
+
 
 // All users
 mongo.connect(() => {
