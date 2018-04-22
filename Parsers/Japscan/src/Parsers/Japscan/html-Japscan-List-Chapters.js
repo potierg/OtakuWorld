@@ -74,7 +74,7 @@ module.exports = class HtmlJapscanListMangas {
             }
 
             for (var key in tomes) {
-                if (tomes[key].chapters.length == 1 && !tomes[key].isNoDetail && tomes[key].isTome) {
+                if (tomes[key].chapters.length == 1 && !tomes[key].isNoDetail && tomes[key].chapters[0].isTome) {
                     tomes[key].link = tomes[key].chapters[0].link;
                     if (tomes[key].chapters[0].flag)
                         tomes[key].flag = tomes[key].chapters[0].flag;
