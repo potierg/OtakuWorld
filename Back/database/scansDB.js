@@ -1,58 +1,87 @@
 'use strict';
 
-var Mongo = require('./mongo');
 var mongoId = require('mongodb');
+var MainDB = require('./mainDB');
 
-module.exports = class ScansDB {
+module.exports = class ScansDB extends MainDB {
 
     constructor(mongo) {
-        this.mongo = mongo;
+        super(mongo, "Scans");
     }
 
-    connect(callback) {
-        this.mongo.connect(function () {
-            callback();
-        });
-    }
-
-    getCollection(callback) {
-        this.mongo.exec((db) => {
-            const collection = db.collection('Scans');
-            callback(collection);
-        });
-    }
-
-    getByScanId(scanId, callback) {
-        this.getCollection(function (collection) {
-            collection.findOne({ '_id': new mongoId.ObjectId(scanId) }, function (err, docs) {
-                callback(docs);
-            });
-        });
+    async getByScanId(scanId, callback) {
+        callback(await this.findOne({ '_id': new mongoId.ObjectId(scanId)}));
     }
 
     getScanWithIdAndNumero(mangaId, tome, chapter, callback) {
-        this.getCollection(function (collection) {
-
+        this.getCollection().aggregate([
+            { '$match': { '_id': new mongoId.ObjectId(mangaId) } },
+            { '$unwind': '$scans' },
+            { '$match': { 'scans.nb': Number.parseFloat(tome) } }
+        ]).toArray(function (err, docs) {
+            if (docs[0] && !docs[0].scans.chapters) {
+                return callback({ link: docs[0].link, scans: docs[0].scans });
+            }
             collection.aggregate([
                 { '$match': { '_id': new mongoId.ObjectId(mangaId) } },
                 { '$unwind': '$scans' },
-                { '$match': { 'scans.nb': Number.parseFloat(tome) } }
+                { '$unwind': '$scans.chapters' },
+                { '$match': { 'scans.chapters.nb': Number.parseFloat(chapter) } },
             ]).toArray(function (err, docs) {
-                if (docs[0] && !docs[0].scans.chapters) {
-                    return callback({link:docs[0].link, scans: docs[0].scans});                    
-                }
-                collection.aggregate([
-                    { '$match': { '_id': new mongoId.ObjectId(mangaId) } },
-                    { '$unwind': '$scans' },
-                    { '$unwind': '$scans.chapters' },
-                    { '$match': { 'scans.chapters.nb': Number.parseFloat(chapter) } },
-                ]).toArray(function (err, docs) {
-                    if (docs[0])
-                        return callback({link:docs[0].scans.chapters.link, scans: docs[0].scans.chapters});
-                    return callback({});
-                });
-
+                if (docs[0])
+                    return callback({ link: docs[0].scans.chapters.link, scans: docs[0].scans.chapters });
+                return callback({});
             });
         });
+    }
+
+    getScanByTomeAndChapter(scans, nbTome, nbChapter) {
+        var scanInfos = {};
+        for (var keyTome in scans) {
+            if (scans[keyTome].nb === nbTome) {
+                scanInfos.nbTome = nbTome;
+                scanInfos.nomTome = scans[keyTome].nom;
+            
+                if (nbChapter !== -1) {
+                    for (var keyChapter in scans[keyTome].chapters) {
+                       if (scans[keyTome].chapters[keyChapter].nb === nbChapter) {
+                            scanInfos.nbChapter = nbChapter;
+                            scanInfos.nomChapter = scans[keyTome].chapters[keyChapter].nomChap;
+                            scanInfos.links = [];
+
+                            if (scans[keyTome].chapters[keyChapter].pages) {
+                                scans[keyTome].chapters[keyChapter].pages.forEach(page => {
+                                    scanInfos.links.push(scans[keyTome].chapters[keyChapter].link+page);
+                                });
+                            } else {
+                                console.log(nbTome, nbChapter);
+                            }
+
+                            return scanInfos;
+                       }
+                    }
+                } else {
+                    scanInfos.links = [];
+                    
+                    scans[keyTome].pages.forEach(page => {
+                        scanInfos.links.push(scans[keyTome].link+page);
+                    });
+                    
+                    scanInfos.links;
+                    return scanInfos;                        
+                }
+            }
+        }
+    }
+
+    async getScansByNumeros(scanId, numeros, callback) {
+        var scans = await this.findOne({ '_id': new mongoId.ObjectId(scanId) });
+        var scansArray = [];
+
+        numeros.forEach(element => {
+            scansArray.push(this.getScanByTomeAndChapter(scans.scans, element.tome, element.chapter));
+        });
+        scansArray = scansArray.reverse();
+        callback(scansArray);
     }
 }

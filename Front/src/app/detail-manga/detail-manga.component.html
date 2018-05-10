@@ -1,0 +1,87 @@
+<div class="contentManga" *ngIf="isLoad">
+	<a href="javascript:;" (click)="returnToLast()">
+		<p style="margin-left:15px; margin-top:-15px; color:white; font-weight:bold; font-size:30px">
+			Retour</p>
+	</a>
+	<div class="header">
+		<h1>{{manga.Nom}}</h1>
+		<!--<i class="imgmenu spacemenu material-icons" (click)="downloadAllMangaActive()">file_download</i>-->
+		<i class="imgmenu spacemenu material-icons" *ngIf="isFavorite" (click)="removeFavorite()">star</i>
+		<i class="imgmenu spacemenu material-icons" *ngIf="!isFavorite" (click)="addFavorite()">star_border</i>
+	</div>
+	<div class="mangadescription">
+		<img *ngIf="manga.Cover.length > 0" class="imgmanga" [src]="manga.Cover[0].img">
+		<img *ngIf="manga.Cover.length == 0" class="imgmanga" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
+		<div class="mangainfo">
+			<div>
+				<p class="info">Auteur : {{manga.Auteur[0]}}</p>
+				<p class="info">Genre : {{manga.Genre[0]}}</p>
+				<p class="info">Nom Alternatif : {{manga['Nom Alternatif'][0]}}</p>
+				<p class="info">Statut : {{manga.Statut}}</p>
+				<p class="info">Année : {{manga['Sortie Initial']}}</p>
+				<p class="info">Dernier Chapitre : {{manga.data[0].data.last}}</p>
+				<p class="info">Synospis : </p>
+			</div>
+			<div class="synospis">
+				<p>{{manga.Synopsis.FR}}</p>
+			</div>
+		</div>
+	</div>
+
+	<button style="display:flex; margin-top:75px" (click)="downloadAllMangaActive()">Télécharger le manga</button>
+	<button style="display:flex; margin-top:75px" (click)="downloadSelectionActive()">Télécharger la sélection</button>
+	
+	<div id="menu">
+        <ul id="onglets">
+            <li *ngFor="let data of manga.data" [ngClass]="(data.id == activeTab) ? 'active' : ''" ng-click="setActiveTab(data.id)"><a>{{data.site.domain}}</a></li>
+        </ul>
+    </div>
+
+	<div>
+		<div id="tableau">
+			<table>
+				<tr>
+					<th id="square"><input type="checkbox" [checked]="isAllCheck" (change)="allCheck()"></th>
+					<th>Chapitres</th>
+					<th>Nom</th>
+					<th>Date</th>
+					<th>Lire</th>
+				</tr>
+				
+				<tr *ngFor="let scan of manga.data[activeTab].scan">
+					<td id="square"><input type="checkbox" [checked]="scan.isDL" (change)="scan.isDL = !scan.isDL"></td>
+					<td>{{scan.nb}}</td>
+					<td>{{scan.nom}}</td>
+					<td>{{scan.date | date}}</td>
+					<td><a>Click</a></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="tableau">
+	</div>
+
+	<!--<table class="blueTable">
+		<thead>
+			<tr>
+				<th>Site</th>
+				<th>Langue</th>
+				<th>Derniers Chapitres</th>
+				<th>Voir</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let data of manga.data">
+				<td>{{data.site.domain}}</td>
+				<td>{{data.site.langue}}</td>
+				<td>{{data.data.last}}</td>
+				<td>
+					<a (click)="viewChapters(data.data.scanId)" href="javascript:;">Voir</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>-->
+
+	<div *ngIf="onLoad">
+		LOADING...
+	</div>

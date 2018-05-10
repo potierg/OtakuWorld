@@ -1,6 +1,5 @@
 .content {
-    font-size: 23px;
-    margin: 0px;
+    height:80vh;
   }
 
 .posters-list[_ngcontent-c2] {
@@ -96,10 +95,3 @@ a[_ngcontent-c2] {
 a[_ngcontent-c2] {
     background-color: transparent;
 }
-
-.footer {
-    text-align:center;
-    background-color: #616161;
-    bottom: 0;
-    width: 100%;
-  }

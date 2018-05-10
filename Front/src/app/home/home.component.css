@@ -91,30 +91,15 @@
   width: 287px;
   color: white;
   font-size: 23px;
-
   height:90vh;
 }
-
 .content {
   padding-top: 20px;
   background-color: #212121;
   color: black;
-  font-size: 23px;
-  margin: 0px;
-  overflow-y: scroll;
-  height:80vh;
-}
-
-.contentManga {
-  padding-top: 20px;
-  background-color: #212121;
-  color: black;
-  font-size: 23px;
-  margin: 0px;
   overflow-y: scroll;
   height:90vh;
 }
-
 .ulist{
   background-color: #616161;
   margin-left: -20px;

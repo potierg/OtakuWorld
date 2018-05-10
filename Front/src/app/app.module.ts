@@ -12,12 +12,17 @@ import { MangaListComponent } from './manga-list/manga-list.component';
 
 import {MatInputModule} from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { InfiniteScrollModule } from "ngx-infinite-scroll";
 
 import {NgxPaginationModule} from 'ngx-pagination';
 import { MangaDetailComponent } from './manga-detail/manga-detail.component';
 import { ScanListComponent } from './scan-list/scan-list.component';
 import { ScanService } from './scan.service';
 import { ScanViewComponent } from './scan-view/scan-view.component';
+import { AllMangasComponent } from './all-mangas/all-mangas.component';
+import { DetailMangaComponent } from './detail-manga/detail-manga.component';
+import { DownloadComponent } from './download/download.component';
+import { DownloadService } from './download.service';
 
 @NgModule({
   declarations: [
@@ -27,8 +32,12 @@ import { ScanViewComponent } from './scan-view/scan-view.component';
     MangaDetailComponent,
     ScanListComponent,
     ScanViewComponent,
+    AllMangasComponent,
+    DetailMangaComponent,
+    DownloadComponent,
   ],
   imports: [
+    InfiniteScrollModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
@@ -36,7 +45,7 @@ import { ScanViewComponent } from './scan-view/scan-view.component';
     FormsModule,
     NgbModule.forRoot()
   ],
-  providers: [MangasService, ScanService],
+  providers: [MangasService, ScanService, DownloadService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -50,7 +50,7 @@ export class ScanViewComponent implements OnInit {
 		this.onLoad = true;
 		console.log(this.scans.pages[this.currentPage]);
 
-		var xhr = new XMLHttpRequest();
+		/*var xhr = new XMLHttpRequest();
 		var th = this;
 
 		xhr.open( "GET", this.scans.pages[this.currentPage], true );
@@ -66,7 +66,7 @@ export class ScanViewComponent implements OnInit {
 			th.onLoad = false;
 		};
 		
-		xhr.send();
+		xhr.send();*/
 		
 
 
