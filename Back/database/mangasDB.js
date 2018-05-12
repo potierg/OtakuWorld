@@ -13,6 +13,15 @@ module.exports = class MangasDB extends MainDB {
         callback(await this.findOne({ '_id': new mongoId.ObjectId(id) }));
     }
 
+    getByIdAsync(id) {
+
+        var th = this;
+        return new Promise(async function (resolve, reject) {
+            var i = await th.findOne({ '_id': new mongoId.ObjectId(id) });
+            resolve(i);
+        });
+    }
+
     async get(count = 25, page = 1, callback) {
         callback(await this.findWithPagination({}, {Nom:1}, count, page));
     }

@@ -123,6 +123,28 @@ app.get('/manga/:id/chapters/:tome/:chapter/scans', (req, res) => {
 
 // Connected
 
+
+app.get('/downloads/:userId', (req, res) => {
+    res = getHeader(res);
+    var userId = req.params.userId;
+
+    async function getListDownload(listDownloads, callback) {
+        var dls = [];
+        for (var keyDownload in listDownloads) {
+            var manga = await mangaModel.getByIdAsync(listDownloads[keyDownload].mangaId);
+            dls.push({nom: manga.Nom, cover: manga.Cover[0] ? manga.Cover[0].img : null, scans:listDownloads[keyDownload].scans});
+        }
+        callback(dls);
+    }
+    
+    downloadModel.getByUserId(userId, function(listDownloads) {
+
+        getListDownload(listDownloads, function(dls) {
+            res.end(JSON.stringify(dls));    
+        });
+    });
+});
+
 app.post('/download/:userId', (req, res) => {
     res = getHeader(res);
     var userId = req.params.userId;
@@ -130,7 +152,9 @@ app.post('/download/:userId', (req, res) => {
     scanModel.getScansByNumeros(req.body.datas.scanId, req.body.datas.scans, function (scans) {
         downloadModel.insertDownload(userId, req.body.datas.mangaId, scans, function () {
         });
-        res.end(JSON.stringify({mangaId:req.body.datas.mangaId, userId:userId, scans:scans}));
+        mangaModel.getById(req.body.datas.mangaId, function(manga) {
+            res.end(JSON.stringify({nom: manga.Nom, cover: manga.Cover[0] ? manga.Cover[0].img : null, scans:scans}));            
+        });
     });
 
     return ;

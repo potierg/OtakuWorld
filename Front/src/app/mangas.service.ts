@@ -7,8 +7,10 @@ import "rxjs/Rx";
 @Injectable()
 export class MangasService {
 	private mangasList = [];
-	private endLoad = false;
-	private lastPageLoad = 0;
+	private loadDone = false;
+	public lastPageLoad = 0;
+	public total = 0;
+	public limit = 100;
 
 	constructor(private http: HttpClient) { }
 
@@ -20,8 +22,8 @@ export class MangasService {
 		this.lastPageLoad = page;
 	}
 	
-	getAll(page, count) {
-		return this.http.get('http://127.0.0.1:8080/mangas/' + count + '/' + page);
+	getAll(page) {
+		return this.http.get('http://127.0.0.1:8080/mangas/' + this.limit + '/' + page);
 	}
 
 	getWithSearch(search, count, page) {
@@ -36,16 +38,16 @@ export class MangasService {
 		return this.mangasList;
 	}
 
-	setEnd() {
-		this.endLoad = true;
+	end() {
+		this.loadDone = true;
 	}
 
 	isEnd() {
-		return this.endLoad;
+		return this.loadDone;
 	}
 
-	savemangasList(l) {
-		this.mangasList = l;
+	saveInMangaslist(manga) {
+		this.mangasList = this.mangasList.concat(manga);
 	}
 
 	isListLoad() {
@@ -54,9 +56,9 @@ export class MangasService {
 		return true;
 	}
 
-	reloadAll(page, count) {
+	getByPage(page) {
 		if (page == this.lastPageLoad)
-			return this.mangasList.slice((page - 1) * count);
-		return this.mangasList.slice((page - 1) * count, ((page) * count) - 1);
+			return this.mangasList.slice((page - 1) * this.limit);
+		return this.mangasList.slice((page - 1) * this.limit, ((page) * this.limit) - 1);
 	}
 }

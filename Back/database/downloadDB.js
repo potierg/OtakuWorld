@@ -9,6 +9,14 @@ module.exports = class DownloadDB extends MainDB {
         super(mongo, "Download");
     }
 
+    async getByUserId(userId, callback) {
+        if (userId == -1) {
+            callback();
+            return ;
+        }
+        return callback(await this.find({'userId': userId}));
+    }
+
     async insertDownload(userId, mangaId, scans, callback) {
         if (userId == -1) {
             callback();

@@ -22,42 +22,26 @@ export class AllMangasComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.mangasList = [];
-		if (!this.mangasService.isListLoad()) {
-			this.loadAllMangas(1);
-		} else {
-			this.totalMangas = this.mangasService.getMangasList().length;
-			this.reloadMangas(1);
-		}
+		this.reloadMangas(1);
 	}
 
-	public loadAllMangas(page) {
-		if (this.mangasList.length > 1 && page > (this.totalMangas / this.limit) + 1) {
-			this.mangasService.setEnd();
-			return ;
-		}
-		this.mangasService.getAll(page, this.limit).subscribe(datas => {
-			this.isLoad = true;
-
-			this.mangasService.setLastPage(page);
-			this.mangasList = this.mangasList.concat(datas['mangas']);
-			this.mangasService.savemangasList(this.mangasList);
-			this.totalMangas = datas['total'];
-
-			setTimeout( () => {
-				this.loadAllMangas(page + 1);
-			 }, 500 );
-		});
-	}
 
 	public reloadMangas(page) {
+
+		if (this.mangasService.total == 0) {
+			return setTimeout( () => {
+				this.reloadMangas(page);
+			}, 500);
+		}
+		
 		if (page > this.mangasService.getLastPage() && this.mangasService.isEnd())
 				return ;
 
-		this.mangasList = this.mangasList.concat(this.mangasService.reloadAll(page, this.limit));
+		this.mangasList = this.mangasList.concat(this.mangasService.getByPage(page));
+
 		this.isLoad = true;
 
-		var timesleep = 500;
+		var timesleep = 100;
 		if (!this.mangasService.isEnd() && page == this.mangasService.getLastPage())
 			timesleep = 2000;
 

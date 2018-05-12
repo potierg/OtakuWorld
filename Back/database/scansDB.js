@@ -75,13 +75,26 @@ module.exports = class ScansDB extends MainDB {
     }
 
     async getScansByNumeros(scanId, numeros, callback) {
-        var scans = await this.findOne({ '_id': new mongoId.ObjectId(scanId) });
+        var scanDatas = await this.findOne({ '_id': new mongoId.ObjectId(scanId) });
         var scansArray = [];
 
+        numeros = numeros.reverse();
+
         numeros.forEach(element => {
-            scansArray.push(this.getScanByTomeAndChapter(scans.scans, element.tome, element.chapter));
+            var scans = this.getScanByTomeAndChapter(scanDatas.scans, element.tome, element.chapter);
+
+            var page = 0;
+            scans.links.forEach(link => {
+                if (link) {
+                    var ext = link.substring(link.lastIndexOf("."));
+                    scansArray.push({nomDir:"Tome "+scans.nbTome+(scans.nomTome ? " : "+scans.nomTome : ""),
+                    nomFile :(scans.nbChapter ? "chap"+scans.nbChapter : '')+"page"+page+ext, link:link});
+                    page++;    
+                } else {
+                    console.log(scans, page);
+                }
+            });
         });
-        scansArray = scansArray.reverse();
         callback(scansArray);
     }
 }
