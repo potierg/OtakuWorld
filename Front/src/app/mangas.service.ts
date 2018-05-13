@@ -4,6 +4,7 @@ import { Observable } from "rxjs/Observable";
 import 'rxjs/add/operator/map';
 import "rxjs/Rx";
 import { UserService } from './user.service';
+import { SearchService } from './search.service';
 
 @Injectable()
 export class MangasService {
@@ -14,10 +15,21 @@ export class MangasService {
 	public limit = 100;
 
 	constructor(private http: HttpClient,
-		private userService: UserService) { }
+		private userService: UserService,
+		private searchService: SearchService) {}
 
 	getListMangas() {
-		return this.mangasList;
+		var search = this.searchService.getSearch();
+		if (search == "") {
+			return this.mangasList;			
+		}
+		var newList = this.mangasList.filter((manga) => {
+			if (manga.Nom.toLowerCase().indexOf(search.toLowerCase()) !== -1)
+				return true;
+			return false;
+		});
+
+		return newList;
 	}
 
 	getLastPage() {
@@ -38,10 +50,6 @@ export class MangasService {
 
 	getMangaById(id, userId) {
 		return this.http.get('http://127.0.0.1:8080/manga/' + id + '?userId=' + userId);
-	}
-
-	getMangasList() {
-		return this.mangasList;
 	}
 
 	end() {

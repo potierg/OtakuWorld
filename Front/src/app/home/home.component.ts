@@ -3,6 +3,7 @@ import { MangasService } from '../mangas.service';
 import { DownloadService } from '../download.service';
 import { UserService } from '../user.service';
 import { Router } from '@angular/router';
+import { SearchService } from '../search.service';
 
 @Component({
 	selector: 'app-home',
@@ -17,6 +18,7 @@ export class HomeComponent implements OnInit {
 	constructor(private mangasService: MangasService,
 		private downloadService: DownloadService,
 		private userService: UserService,
+		private searchService: SearchService,
 		private router: Router) {
 	}
 
@@ -48,6 +50,10 @@ export class HomeComponent implements OnInit {
 				this.loadAllMangas(page + 1);
 			 }, 500 );
 		});
+	}
+
+	searchChange() {
+		this.searchService.setSearch(this.searchStr);
 	}
 
 	logout() {

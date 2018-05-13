@@ -3,6 +3,7 @@ import { MangasService } from '../mangas.service';
 import { Router } from '@angular/router';
 import { HostListener } from '@angular/core';
 import { UserService } from '../user.service';
+import { SearchService } from '../search.service';
 
 @Component({
 	selector: 'app-all-mangas',
@@ -19,6 +20,7 @@ export class AllMangasComponent implements OnInit {
 
 	constructor(private mangasService: MangasService,
 				private userService: UserService,
+				private searchService: SearchService,
 				private router: Router) {
 		
 	}
@@ -50,5 +52,4 @@ export class AllMangasComponent implements OnInit {
 			this.userService.loadUser(() => {});
 		});
 	}
-
 }

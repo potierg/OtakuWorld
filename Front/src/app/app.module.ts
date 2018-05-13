@@ -26,8 +26,8 @@ import { DownloadService } from './download.service';
 import { UserService } from './user.service';
 import { FavoriteComponent } from './favorite/favorite.component';
 import { LoginComponent } from './login/login.component';
-import { SiginComponent } from './sigin/sigin.component';
 import { SigninComponent } from './signin/signin.component';
+import { SearchService } from './search.service';
 
 @NgModule({
   declarations: [
@@ -42,7 +42,6 @@ import { SigninComponent } from './signin/signin.component';
     DownloadComponent,
     FavoriteComponent,
     LoginComponent,
-    SiginComponent,
     SigninComponent,
   ],
   imports: [
@@ -54,7 +53,7 @@ import { SigninComponent } from './signin/signin.component';
     FormsModule,
     NgbModule.forRoot()
   ],
-  providers: [MangasService, ScanService, DownloadService, UserService],
+  providers: [MangasService, ScanService, DownloadService, UserService, SearchService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

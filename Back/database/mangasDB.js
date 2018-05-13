@@ -36,6 +36,6 @@ module.exports = class MangasDB extends MainDB {
 
     async getByIds(listIds, callback) {
         var obj_ids = listIds.map(function(id) { return new mongoId.ObjectId(id); });
-        callback(await this.find({_id: {$in: obj_ids}}));
+        callback(await this.findAndSort({_id: {$in: obj_ids}}, {Nom:1}));
     }
 }

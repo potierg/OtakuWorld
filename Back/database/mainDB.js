@@ -33,6 +33,15 @@ module.exports = class MainDB {
         });
     }
 
+    findAndSort(match, sort) {
+        var th = this;
+        return new Promise(function (resolve, reject) {
+            th.getCollection().find(match).sort(sort).toArray(function (err, docs) {
+                resolve(docs);
+            });
+        });
+    }
+
     findOne(match) {
         var th = this;
         return new Promise(function (resolve, reject) {

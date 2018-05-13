@@ -11,13 +11,8 @@
         <div class="search">
             <form class="searchbar" method="get" action="search.php">
                 <i class="headericons material-icons">search</i>
-                <input mdInput name="search" id="searcharea" placeholder="Rechercher" [(ngModel)]="searchStr">
+                <input mdInput name="search" id="searcharea" placeholder="Rechercher" [(ngModel)]="searchStr" (ngModelChange)="searchChange()">
             </form>
-            <a href="javascript:;" (click)="refreshMangas()">
-                <span>
-                    <i class="bigicons material-icons">search</i>
-                </span>
-            </a>
         </div>
         <div class="icone">
             <span>

@@ -1,4 +1,4 @@
-<div *ngIf="isLoad" class="content">
+<div *ngIf="isLoad && this.userService.getUser()" class="content">
 	<ul class="to-watch-list posters-list list-unstyled list-inline single-row">
 		<li class="new" *ngFor="let manga of this.userService.getUser().favorite" [routerLink]="['/home/detail', manga._id]">
 			<div class="nav">
