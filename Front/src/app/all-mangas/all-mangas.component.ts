@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MangasService } from '../mangas.service';
 import { Router } from '@angular/router';
 import { HostListener } from '@angular/core';
+import { UserService } from '../user.service';
 
 @Component({
 	selector: 'app-all-mangas',
@@ -17,7 +18,9 @@ export class AllMangasComponent implements OnInit {
 	private totalMangas = 0;
 	private currentPage = 1;
 
-	constructor(private mangasService: MangasService, private router: Router) {
+	constructor(private mangasService: MangasService,
+				private userService: UserService,
+				private router: Router) {
 		
 	}
 
@@ -67,4 +70,19 @@ export class AllMangasComponent implements OnInit {
 		last = last.replace("One Shot ", "").replace("Webtoon ", "");
 		return last;
 	}
+
+	addFavorite(index) {
+		this.mangasList[index].isFavorite = true;
+		this.mangasService.favorite(this.mangasList[index]._id).subscribe(() => {
+			this.userService.loadUser();
+		});
+	}
+
+	removeFavorite(index) {
+		this.mangasList[index].isFavorite = false;
+		this.mangasService.favorite(this.mangasList[index]._id).subscribe(() => {
+			this.userService.loadUser();
+		});
+	}
+
 }

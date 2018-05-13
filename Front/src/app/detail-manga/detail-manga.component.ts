@@ -4,6 +4,8 @@ import { MangasService } from '../mangas.service';
 import { ScanService } from '../scan.service';
 import { DownloadService } from '../download.service';
 import {Location} from '@angular/common';
+import { fail } from 'assert';
+import { UserService } from '../user.service';
 
 @Component({
 	selector: 'app-detail-manga',
@@ -16,12 +18,12 @@ export class DetailMangaComponent implements OnInit {
 	private isLoad = false;
 	private activeTab = 0;
 	private isAllCheck = false;
-	private isFavorite = false;
 
 	constructor(private route: ActivatedRoute,
 		private mangasService: MangasService,
 		private scanService: ScanService,
 		private downloadService: DownloadService,
+		private userService: UserService,
 		private _location: Location) {
 	}
 
@@ -112,10 +114,16 @@ export class DetailMangaComponent implements OnInit {
 	}
 
 	addFavorite() {
-		this.isFavorite = true;
+		this.mangasService.favorite(this.manga._id).subscribe(() => {
+			this.manga.isFavorite = true;
+			this.userService.loadUser();
+		});
 	}
 
 	removeFavorite() {
-		this.isFavorite = false;
+		this.mangasService.favorite(this.manga._id).subscribe(() => {
+			this.manga.isFavorite = false;
+			this.userService.loadUser();
+		});
 	}
 }

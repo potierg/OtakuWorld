@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { AllMangasComponent } from './all-mangas/all-mangas.component';
 import { DetailMangaComponent } from './detail-manga/detail-manga.component';
 import { DownloadComponent } from './download/download.component';
+import { FavoriteComponent } from './favorite/favorite.component';
 
 const routes: Routes = [
 	{
@@ -12,7 +13,8 @@ const routes: Routes = [
 		children: [
 			{path: "", component: AllMangasComponent},
 			{path: "detail/:id", component: DetailMangaComponent},
-			{path: "download", component: DownloadComponent}
+			{path: "download", component: DownloadComponent},
+			{path: "favorite", component: FavoriteComponent}
 		]
 	}
 ];

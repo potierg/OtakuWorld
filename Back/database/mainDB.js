@@ -49,6 +49,14 @@ module.exports = class MainDB {
                 resolve(docs);
             });
         });
+    }
 
+    updateOne(match, set) {
+        var th = this;
+        return new Promise(function (resolve, reject) {
+            th.getCollection().updateOne(match, {$set: set}, function (err, docs) {
+                resolve(docs);
+            });
+        });
     }
 }

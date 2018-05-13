@@ -23,6 +23,8 @@ import { AllMangasComponent } from './all-mangas/all-mangas.component';
 import { DetailMangaComponent } from './detail-manga/detail-manga.component';
 import { DownloadComponent } from './download/download.component';
 import { DownloadService } from './download.service';
+import { UserService } from './user.service';
+import { FavoriteComponent } from './favorite/favorite.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,7 @@ import { DownloadService } from './download.service';
     AllMangasComponent,
     DetailMangaComponent,
     DownloadComponent,
+    FavoriteComponent,
   ],
   imports: [
     InfiniteScrollModule,
@@ -45,7 +48,7 @@ import { DownloadService } from './download.service';
     FormsModule,
     NgbModule.forRoot()
   ],
-  providers: [MangasService, ScanService, DownloadService],
+  providers: [MangasService, ScanService, DownloadService, UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

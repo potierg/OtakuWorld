@@ -6,8 +6,8 @@
 	<div class="header">
 		<h1>{{manga.Nom}}</h1>
 		<!--<i class="imgmenu spacemenu material-icons" (click)="downloadAllMangaActive()">file_download</i>-->
-		<i class="imgmenu spacemenu material-icons" *ngIf="isFavorite" (click)="removeFavorite()">star</i>
-		<i class="imgmenu spacemenu material-icons" *ngIf="!isFavorite" (click)="addFavorite()">star_border</i>
+		<i class="imgmenu spacemenu material-icons" *ngIf="manga.isFavorite" (click)="removeFavorite()">star</i>
+		<i class="imgmenu spacemenu material-icons" *ngIf="!manga.isFavorite" (click)="addFavorite()">star_border</i>
 	</div>
 	<div class="mangadescription">
 		<img *ngIf="manga.Cover.length > 0" class="imgmanga" [src]="manga.Cover[0].img">

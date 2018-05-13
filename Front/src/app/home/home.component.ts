@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MangasService } from '../mangas.service';
 import { DownloadService } from '../download.service';
+import { UserService } from '../user.service';
 
 @Component({
 	selector: 'app-home',
@@ -12,7 +13,9 @@ export class HomeComponent implements OnInit {
 	private searchStr = '';
 	private showMenu = true;
 
-	constructor(private mangasService: MangasService, private downloadService: DownloadService) {
+	constructor(private mangasService: MangasService,
+		private downloadService: DownloadService,
+		private userService: UserService) {
 	}
 
 	ngOnInit() {
@@ -24,6 +27,8 @@ export class HomeComponent implements OnInit {
 				th.loadAllMangas(1);
 			});
 		}
+
+		this.userService.loadUser();
 	}
 
 	public loadAllMangas(page) {

@@ -14,7 +14,6 @@ module.exports = class MangasDB extends MainDB {
     }
 
     getByIdAsync(id) {
-
         var th = this;
         return new Promise(async function (resolve, reject) {
             var i = await th.findOne({ '_id': new mongoId.ObjectId(id) });
@@ -33,5 +32,10 @@ module.exports = class MangasDB extends MainDB {
 
     async getByAuteur(auteur, callback) {
         callback(await this.find({'Auteur': auteur}));
+    }
+
+    async getByIds(listIds, callback) {
+        var obj_ids = listIds.map(function(id) { return new mongoId.ObjectId(id); });
+        callback(await this.find({_id: {$in: obj_ids}}));
     }
 }

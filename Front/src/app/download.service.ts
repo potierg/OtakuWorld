@@ -5,7 +5,8 @@ import { HttpClient } from '@angular/common/http';
 export class DownloadService {
 	private listDownload = [];
 	private loadDone = false;
-
+	public downloading = false;
+	
 	constructor(private http: HttpClient) { }
 
 	public isListLoad() {
@@ -39,5 +40,28 @@ export class DownloadService {
 
 	public addToDownloadList(obj) {
 		this.listDownload.push(obj);
+	}
+
+	public async startDownload() {
+		this.downloading = true;
+		for (var keyDl in this.listDownload) {
+			var listPages = [];
+
+			console.log(this.listDownload[keyDl]);
+
+			while (this.listDownload[keyDl].scans.length > 0) {
+				console.log(this.listDownload[keyDl].scans[0]);
+				this.listDownload[keyDl].scans = this.listDownload[keyDl].scans.slice(1);
+			}
+
+			return;
+
+		}
+		this.downloading = false;
+
+	}
+
+	public stopDownload() {
+		this.downloading = false;
 	}
 }

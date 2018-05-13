@@ -14,6 +14,7 @@ const Mongo = require("./mongo");
 const MangaModel = require('./database/mangasDB.js');
 const ScanModel = require('./database/scansDB.js');
 const DownloadModel = require("./database/downloadDB");
+const UserModel = require("./database/usersDB");
 
 var mongo = new Mongo();
 
@@ -22,6 +23,7 @@ init();
 var mangaModel = new MangaModel(mongo);
 var scanModel = new ScanModel(mongo);
 var downloadModel = new DownloadModel(mongo);
+var userModel = new UserModel(mongo);
 
 const timeout = require('connect-timeout'); //express v4
 
@@ -65,17 +67,33 @@ app.get('/mangas/:count/:page', (req, res) => {
     res = getHeader(res);
     var count = Number.parseInt(req.params.count);
     var page = Number.parseInt(req.params.page);
+    var userId = req.query.userId ? req.query.userId : -1;
     
     mangaModel.get(count, page, function (mangasObj) {
-        res.end(JSON.stringify(mangasObj));    
+        if (userId === -1) {
+            return res.end(JSON.stringify(mangasObj));
+        }
+        userModel.getById(userId, (user) => {
+            for (var k in mangasObj.mangas) {
+                var isFavorite = false;
+                for (var i in user.favorite) {
+                    if (user.favorite[i] == mangasObj.mangas[k]._id)
+                        isFavorite = true;
+                }
+                mangasObj.mangas[k].isFavorite = isFavorite;
+            }
+            res.end(JSON.stringify(mangasObj));    
+        });
     });
 });
 
 app.get('/manga/:id', (req, res) => {
     res = getHeader(res);
     var mangaId = req.params.id;
+    var userId = req.query.userId ? req.query.userId : -1;
 
-    mangaModel.getById(mangaId, function (manga) {
+    mangaModel.getById(mangaId, async function (manga) {
+        manga.isFavorite = await userModel.isMangaFavorite(userId, mangaId);
         res.end(JSON.stringify(manga));
     });
 });
@@ -160,6 +178,28 @@ app.post('/download/:userId', (req, res) => {
     return ;
 });
 
+
+app.get('/favorite/:userId/:mangaId', (req, res) => {
+    res = getHeader(res);
+    var userId = req.params.userId;
+    var mangaId = req.params.mangaId;
+
+    userModel.updateFavorite(userId, mangaId, () => {
+        res.end(JSON.stringify("OK"));        
+    });
+});
+
+app.get('/user/:userId', (req, res) => {
+    res = getHeader(res);
+    var userId = req.params.userId;
+
+    userModel.getById(userId, (user) => {
+        mangaModel.getByIds(user.favorite, (list) => {
+            user.favorite = list;
+            res.end(JSON.stringify(user));
+        });
+    });
+});
 
 /*
 app.get('/downloadList', (req, res) => {
