@@ -8,6 +8,7 @@ const express = require('express');
 const app = express();
 module.exports = app;
 
+const crypto = require('crypto');
 const header = require("./src/header");
 const Mongo = require("./mongo");
 
@@ -70,7 +71,7 @@ app.get('/mangas/:count/:page', (req, res) => {
     var userId = req.query.userId ? req.query.userId : -1;
     
     mangaModel.get(count, page, function (mangasObj) {
-        if (userId === -1) {
+        if (userId == -1) {
             return res.end(JSON.stringify(mangasObj));
         }
         userModel.getById(userId, (user) => {
@@ -198,6 +199,29 @@ app.get('/user/:userId', (req, res) => {
             user.favorite = list;
             res.end(JSON.stringify(user));
         });
+    });
+});
+
+app.post('/login', (req, res) => {
+    res = getHeader(res);
+    var userDatas = req.body;
+
+    userModel.getUser({login:userDatas.username, password:crypto.createHash('md5').update(userDatas.password).digest("hex")}, (user) => {
+        if (user)
+            res.end(JSON.stringify(user._id));
+        else
+            res.end(JSON.stringify(false));
+    });
+});
+
+app.post('/signin', (req, res) => {
+    res = getHeader(res);
+    var userDatas = req.body;
+
+    userDatas.password = crypto.createHash('md5').update(userDatas.password).digest("hex");
+    userDatas.favorite = [];
+    userModel.createUser(userDatas, (id) => {
+        res.end(JSON.stringify(id));
     });
 });
 

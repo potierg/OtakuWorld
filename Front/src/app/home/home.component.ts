@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MangasService } from '../mangas.service';
 import { DownloadService } from '../download.service';
 import { UserService } from '../user.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-home',
@@ -15,20 +16,21 @@ export class HomeComponent implements OnInit {
 
 	constructor(private mangasService: MangasService,
 		private downloadService: DownloadService,
-		private userService: UserService) {
+		private userService: UserService,
+		private router: Router) {
 	}
 
 	ngOnInit() {
 		var th = this;
-		if (!th.downloadService.isListLoad()) {
-			this.downloadService.loadDownloadsByUserId().subscribe(function (list) {
-				th.downloadService.setList(list);
-
-				th.loadAllMangas(1);
-			});
-		}
-
-		this.userService.loadUser();
+		this.userService.loadUser(() => {
+			if (!th.downloadService.isListLoad()) {
+				this.downloadService.loadDownloadsByUserId().subscribe(function (list) {
+					th.downloadService.setList(list);
+	
+					th.loadAllMangas(1);
+				});
+			};	
+		});
 	}
 
 	public loadAllMangas(page) {
@@ -36,7 +38,7 @@ export class HomeComponent implements OnInit {
 			this.mangasService.end();
 			return ;
 		}
-		this.mangasService.getAll(page).subscribe(datas => {
+		this.mangasService.getAll(page, this.userService.getUserId()).subscribe(datas => {
 			this.mangasService.setLastPage(page);
 			if (this.mangasService.total == 0)
 				this.mangasService.total = datas['total'];
@@ -48,4 +50,8 @@ export class HomeComponent implements OnInit {
 		});
 	}
 
+	logout() {
+		this.userService.logOut();
+		window.location.href = '/home';
+	}
 }

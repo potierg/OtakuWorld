@@ -29,7 +29,7 @@ export class DetailMangaComponent implements OnInit {
 
 	ngOnInit() {
 		this.route.params.subscribe(params => {
-			this.mangasService.getMangaById(params.id).subscribe(manga => {
+			this.mangasService.getMangaById(params.id, this.userService.getUserId()).subscribe(manga => {
 				this.manga = manga;
 				this.format();
 				this.isLoad = true;
@@ -114,16 +114,18 @@ export class DetailMangaComponent implements OnInit {
 	}
 
 	addFavorite() {
-		this.mangasService.favorite(this.manga._id).subscribe(() => {
+		this.mangasService.favorite(this.manga._id, this.userService.getUserId()).subscribe(() => {
+			this.mangasService.setFavorite(this.manga._id, true);
 			this.manga.isFavorite = true;
-			this.userService.loadUser();
+			this.userService.loadUser(() => {});
 		});
 	}
 
 	removeFavorite() {
-		this.mangasService.favorite(this.manga._id).subscribe(() => {
+		this.mangasService.favorite(this.manga._id, this.userService.getUserId()).subscribe(() => {
+			this.mangasService.setFavorite(this.manga._id, false);
 			this.manga.isFavorite = false;
-			this.userService.loadUser();
+			this.userService.loadUser(() => {});
 		});
 	}
 }

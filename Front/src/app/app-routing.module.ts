@@ -6,6 +6,8 @@ import { AllMangasComponent } from './all-mangas/all-mangas.component';
 import { DetailMangaComponent } from './detail-manga/detail-manga.component';
 import { DownloadComponent } from './download/download.component';
 import { FavoriteComponent } from './favorite/favorite.component';
+import { LoginComponent } from './login/login.component';
+import { SigninComponent } from './signin/signin.component';
 
 const routes: Routes = [
 	{
@@ -14,7 +16,9 @@ const routes: Routes = [
 			{path: "", component: AllMangasComponent},
 			{path: "detail/:id", component: DetailMangaComponent},
 			{path: "download", component: DownloadComponent},
-			{path: "favorite", component: FavoriteComponent}
+			{path: "favorite", component: FavoriteComponent},
+			{path: "login", component: LoginComponent},
+			{path: "signin", component: SigninComponent}
 		]
 	}
 ];

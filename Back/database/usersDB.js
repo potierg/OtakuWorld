@@ -9,6 +9,10 @@ module.exports = class UsersDB extends MainDB {
         super(mongo, "Users");
     }
 
+    async getUser(match, callback) {
+        callback(await this.findOne(match));
+    }
+
     async getById(id, callback) {
         callback(await this.findOne({ '_id': new mongoId.ObjectId(id) }));
     }
@@ -38,5 +42,11 @@ module.exports = class UsersDB extends MainDB {
             }
             resolve (true);
         });
+    }
+
+    async createUser(userDatas, callback) {
+        userDatas._id = new mongoId.ObjectId();
+        await this.insertOne(userDatas);
+        callback(userDatas._id);
     }
 }

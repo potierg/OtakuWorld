@@ -22,11 +22,11 @@ export class MangaDetailComponent implements OnInit {
 
   ngOnInit() {
     this.onLoad = true;
-    this.mangasService.getMangaById(this.mangaId).subscribe(manga => {
+    /*this.mangasService.getMangaById(this.mangaId).subscribe(manga => {
       this.manga = manga;
       this.format();
       this.onLoad = false;
-    });
+    });*/
   }
 
   format() {

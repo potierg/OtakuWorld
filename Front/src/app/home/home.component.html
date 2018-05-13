@@ -24,7 +24,11 @@
                 <i class="headericons material-icons">notifications_none</i>
             </span>
             <span>
-                <i class="headericons material-icons">account_circle</i>
+                    <a *ngIf="userService.isUserLoad()" href="javascript:;" (click)="logout()" [routerLink]="['/home']">
+                        <i class="headericons material-icons">power_settings_new</i></a>
+                    <a *ngIf="!userService.isUserLoad()" href="javascript:;" [routerLink]="['/home/login']">
+                    <i class="headericons material-icons">account_circle</i>
+                </a>
             </span>
         </div>
     </header>
@@ -49,7 +53,7 @@
                     <a href="#">Dernières Sorties</a>
                 </li>
             </ul>
-            <li class="list">
+            <li class="list" *ngIf="userService.isUserLoad()">
                 <i class="headericons material-icons">library_books</i>
                 <a href="javascript:;" [routerLink]="['/home/favorite']">Librairie</a>
             </li>

@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from "rxjs/Observable";
 import 'rxjs/add/operator/map';
 import "rxjs/Rx";
-
-const userID = "5af746ad4914c73020c5bfbe";
+import { UserService } from './user.service';
 
 @Injectable()
 export class MangasService {
@@ -14,7 +13,12 @@ export class MangasService {
 	public total = 0;
 	public limit = 100;
 
-	constructor(private http: HttpClient) { }
+	constructor(private http: HttpClient,
+		private userService: UserService) { }
+
+	getListMangas() {
+		return this.mangasList;
+	}
 
 	getLastPage() {
 		return this.lastPageLoad;
@@ -24,16 +28,16 @@ export class MangasService {
 		this.lastPageLoad = page;
 	}
 	
-	getAll(page) {
-		return this.http.get('http://127.0.0.1:8080/mangas/' + this.limit + '/' + page + '?userId=' + userID);
+	getAll(page, userId) {
+		return this.http.get('http://127.0.0.1:8080/mangas/' + this.limit + '/' + page + '?userId=' + userId);
 	}
 
 	getWithSearch(search, count, page) {
 		return this.http.get('http://127.0.0.1:8080/manga/search/' + search + '/' + count + '/' + page);
 	}
 
-	getMangaById(id) {
-		return this.http.get('http://127.0.0.1:8080/manga/' + id + '?userId=' + userID);
+	getMangaById(id, userId) {
+		return this.http.get('http://127.0.0.1:8080/manga/' + id + '?userId=' + userId);
 	}
 
 	getMangasList() {
@@ -64,8 +68,16 @@ export class MangasService {
 		return this.mangasList.slice((page - 1) * this.limit, ((page) * this.limit) - 1);
 	}
 
-	favorite(mangaId) {
-		return this.http.get('http://127.0.0.1:8080/favorite/' + userID + '/' + mangaId);
+	setFavorite(mangaId, val) {
+		for (var k in this.mangasList) {
+			if (this.mangasList[k]._id == mangaId) {
+				this.mangasList[k].isFavorite = val;
+			}
+		}
+	}
+
+	favorite(mangaId, userId) {
+		return this.http.get('http://127.0.0.1:8080/favorite/' + userId + '/' + mangaId);
 	}
 
 	getByListIds(listIds) {

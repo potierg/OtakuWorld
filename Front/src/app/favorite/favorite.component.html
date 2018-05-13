@@ -1,6 +1,6 @@
 <div *ngIf="isLoad" class="content">
 	<ul class="to-watch-list posters-list list-unstyled list-inline single-row">
-		<li class="new" *ngFor="let manga of listManga" [routerLink]="['/home/detail', manga._id]">
+		<li class="new" *ngFor="let manga of this.userService.getUser().favorite" [routerLink]="['/home/detail', manga._id]">
 			<div class="nav">
 				<i class="">DL</i>
 			</div>

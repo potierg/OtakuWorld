@@ -1,9 +1,13 @@
 <div *ngIf="isLoad" class="content">
 	<ul class="to-watch-list posters-list list-unstyled list-inline single-row">
-		<li class="new" *ngFor="let manga of mangasList; let i = index" [attr.data-index]="i">
-			<div class="nav">
-				<i class="imgmenu spacemenu material-icons" (click)="removeFavorite(i)" *ngIf="manga.isFavorite">star</i>
-				<i class="imgmenu spacemenu material-icons" (click)="addFavorite(i)" *ngIf="!manga.isFavorite">star_border</i>
+		<li class="new" *ngFor="let manga of mangasService.getListMangas(); let i = index" [attr.data-index]="i">
+			<div class="nav" *ngIf="userService.isUserLoad()">
+				<a href="javascript:;" (click)="removeFavorite(i)" *ngIf="manga.isFavorite">
+					<i class="imgmenu spacemenu material-icons">star</i>
+				</a>
+				<a href="javascript:;" (click)="addFavorite(i)" *ngIf="!manga.isFavorite">
+					<i class="imgmenu spacemenu material-icons">star_border</i>
+				</a>
 				<i class="">DL</i>
 			</div>
 			<div class="image-crop" [routerLink]="['detail', manga._id]">

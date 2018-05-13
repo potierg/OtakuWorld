@@ -16,7 +16,7 @@ export class FavoriteComponent implements OnInit {
 		private userService: UserService) { }
 
 	ngOnInit() {
-		this.loadFavoriteList();
+		this.isLoad = true;
 	}
 
 	loadFavoriteList() {
@@ -27,7 +27,6 @@ export class FavoriteComponent implements OnInit {
 		}
 
 		this.listManga = this.userService.getUser().favorite;
-		this.isLoad = true;
 	}
 
 	public getLastChapString(manga) {

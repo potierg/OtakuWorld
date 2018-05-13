@@ -14,7 +14,6 @@ export class AllMangasComponent implements OnInit {
 	private limit = 100;
 	private isLoad: Boolean = false;
 
-	private mangasList: any = [];
 	private totalMangas = 0;
 	private currentPage = 1;
 
@@ -25,41 +24,8 @@ export class AllMangasComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.reloadMangas(1);
-	}
-
-
-	public reloadMangas(page) {
-
-		if (this.mangasService.total == 0) {
-			return setTimeout( () => {
-				this.reloadMangas(page);
-			}, 500);
-		}
-		
-		if (page > this.mangasService.getLastPage() && this.mangasService.isEnd())
-				return ;
-
-		this.mangasList = this.mangasList.concat(this.mangasService.getByPage(page));
-
+		//this.reloadMangas(1);
 		this.isLoad = true;
-
-		var timesleep = 100;
-		if (!this.mangasService.isEnd() && page == this.mangasService.getLastPage())
-			timesleep = 2000;
-
-		setTimeout( () => {
-			this.reloadMangas(page + 1);
-		}, timesleep);
-	}
-
-	/*public setPage(event): void {
-	  this.currentPage = event;
-	  this.loaAllMangas(0);
-	}*/
-
-	public viewManga(id) {
-
 	}
 
 	public getLastChapString(manga) {
@@ -72,16 +38,16 @@ export class AllMangasComponent implements OnInit {
 	}
 
 	addFavorite(index) {
-		this.mangasList[index].isFavorite = true;
-		this.mangasService.favorite(this.mangasList[index]._id).subscribe(() => {
-			this.userService.loadUser();
+		this.mangasService.getListMangas()[index].isFavorite = true;
+		this.mangasService.favorite(this.mangasService.getListMangas()[index]._id, this.userService.getUserId()).subscribe(() => {
+			this.userService.loadUser(() => {});
 		});
 	}
 
 	removeFavorite(index) {
-		this.mangasList[index].isFavorite = false;
-		this.mangasService.favorite(this.mangasList[index]._id).subscribe(() => {
-			this.userService.loadUser();
+		this.mangasService.getListMangas()[index].isFavorite = false;
+		this.mangasService.favorite(this.mangasService.getListMangas()[index]._id, this.userService.getUserId()).subscribe(() => {
+			this.userService.loadUser(() => {});
 		});
 	}
 

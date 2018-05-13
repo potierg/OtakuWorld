@@ -25,6 +25,9 @@ import { DownloadComponent } from './download/download.component';
 import { DownloadService } from './download.service';
 import { UserService } from './user.service';
 import { FavoriteComponent } from './favorite/favorite.component';
+import { LoginComponent } from './login/login.component';
+import { SiginComponent } from './sigin/sigin.component';
+import { SigninComponent } from './signin/signin.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,9 @@ import { FavoriteComponent } from './favorite/favorite.component';
     DetailMangaComponent,
     DownloadComponent,
     FavoriteComponent,
+    LoginComponent,
+    SiginComponent,
+    SigninComponent,
   ],
   imports: [
     InfiniteScrollModule,
