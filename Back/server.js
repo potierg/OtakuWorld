@@ -6,6 +6,7 @@ const HOST = '0.0.0.0';
 
 const express = require('express');
 const app = express();
+const cors = require('cors')
 module.exports = app;
 
 const crypto = require('crypto');
@@ -34,6 +35,7 @@ app.use(haltOnTimedout);
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(cors());
 
 const { exec } = require('child_process');
 
