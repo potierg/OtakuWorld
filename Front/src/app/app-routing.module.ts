@@ -11,7 +11,7 @@ import { SigninComponent } from './signin/signin.component';
 
 const routes: Routes = [
 	{
-		path: 'home', component: HomeComponent,
+		path: '', component: HomeComponent,
 		children: [
 			{path: "", component: AllMangasComponent},
 			{path: "detail/:id", component: DetailMangaComponent},

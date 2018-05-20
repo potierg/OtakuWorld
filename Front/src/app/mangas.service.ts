@@ -5,6 +5,7 @@ import 'rxjs/add/operator/map';
 import "rxjs/Rx";
 import { UserService } from './user.service';
 import { SearchService } from './search.service';
+import { environment } from '../environments/environment'
 
 @Injectable()
 export class MangasService {
@@ -41,15 +42,15 @@ export class MangasService {
 	}
 	
 	getAll(page, userId) {
-		return this.http.get('http://127.0.0.1:8080/mangas/' + this.limit + '/' + page + '?userId=' + userId);
+		return this.http.get(environment.serverIp + 'mangas/' + this.limit + '/' + page + '?userId=' + userId);
 	}
 
 	getWithSearch(search, count, page) {
-		return this.http.get('http://127.0.0.1:8080/manga/search/' + search + '/' + count + '/' + page);
+		return this.http.get(environment.serverIp + 'manga/search/' + search + '/' + count + '/' + page);
 	}
 
 	getMangaById(id, userId) {
-		return this.http.get('http://127.0.0.1:8080/manga/' + id + '?userId=' + userId);
+		return this.http.get(environment.serverIp + 'manga/' + id + '?userId=' + userId);
 	}
 
 	end() {
@@ -85,7 +86,7 @@ export class MangasService {
 	}
 
 	favorite(mangaId, userId) {
-		return this.http.get('http://127.0.0.1:8080/favorite/' + userId + '/' + mangaId);
+		return this.http.get(environment.serverIp + 'favorite/' + userId + '/' + mangaId);
 	}
 
 	getByListIds(listIds) {

@@ -15,19 +15,19 @@ export class SigninComponent implements OnInit {
 
   ngOnInit() {
     if (this.userService.isUserLoad()) {
-			return this.router.navigate(['home']);
+			return this.router.navigate(['']);
 		}
   }
 
   signIn() {
 		this.userService.signIn(this.userInfos, (res) => {
 			if (res) {
-				return this.router.navigate(['home']);
+				return this.router.navigate(['']);
 			}
 		});
   }
   
   logIn() {
-    this.router.navigate(['home/login']);    
+    this.router.navigate(['login']);    
   }
 }

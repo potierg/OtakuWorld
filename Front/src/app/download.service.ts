@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment'
 
 @Injectable()
 export class DownloadService {
@@ -14,7 +15,7 @@ export class DownloadService {
 	}
 
 	public loadDownloadsByUserId() {
-		return this.http.get('http://127.0.0.1:8080/downloads/' + 666);
+		return this.http.get(environment.serverIp + 'downloads/' + 666);
 	}
 
 	public setList(listDownload) {
@@ -31,7 +32,7 @@ export class DownloadService {
 				listDownloadNb.push({tome:element.tome, chapter:element.chapter ? element.chapter : -1});
 		});
 
-		return this.http.post('http://127.0.0.1:8080/download/' + 666, { datas: { scans: listDownloadNb, mangaId: mangaId, scanId: scanId } } );
+		return this.http.post(environment.serverIp + 'download/' + 666, { datas: { scans: listDownloadNb, mangaId: mangaId, scanId: scanId } } );
 	}
 
 	public getDownloadList() {

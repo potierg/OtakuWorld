@@ -3,9 +3,10 @@
 const MongoClient = require('mongodb').MongoClient;
 var mongoId = require('mongodb');
 const assert = require('assert');
+const config = require('./config');
 
-const url = 'mongodb://193.70.91.62:27017';
-const dbName = 'OtakuWorld';
+const url = config.urlServer;
+const dbName = config.dbName;
 
 module.exports = class Mongo {
 

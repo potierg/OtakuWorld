@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
 
 	ngOnInit() {
 		if (this.userService.isUserLoad()) {
-			return this.router.navigate(['home']);
+			return this.router.navigate(['']);
 		}
 	}
 
@@ -24,13 +24,13 @@ export class LoginComponent implements OnInit {
 		console.log(this.loginInfos);
 		this.userService.logIn(this.loginInfos, (res) => {
 			if (res) {
-				window.location.href = '/home';
+				window.location.href = '/';
 			}
 			this.error = true;
 		});
 	}
 	
 	signIn() {
-		this.router.navigate(['home/signin']);
+		this.router.navigate(['signin']);
 	}
 }

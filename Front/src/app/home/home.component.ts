@@ -58,6 +58,6 @@ export class HomeComponent implements OnInit {
 
 	logout() {
 		this.userService.logOut();
-		window.location.href = '/home';
+		window.location.href = '/';
 	}
 }

@@ -19,9 +19,9 @@
                 <i class="headericons material-icons">notifications_none</i>
             </span>
             <span>
-                    <a *ngIf="userService.isUserLoad()" href="javascript:;" (click)="logout()" [routerLink]="['/home']">
+                    <a *ngIf="userService.isUserLoad()" href="javascript:;" (click)="logout()" [routerLink]="['/']">
                         <i class="headericons material-icons">power_settings_new</i></a>
-                    <a *ngIf="!userService.isUserLoad()" href="javascript:;" [routerLink]="['/home/login']">
+                    <a *ngIf="!userService.isUserLoad()" href="javascript:;" [routerLink]="['/login']">
                     <i class="headericons material-icons">account_circle</i>
                 </a>
             </span>
@@ -31,7 +31,7 @@
     <div class="menu" *ngIf="showMenu">
         <ul class="ulist">
             <li class="list">
-                <a href="javascript:;" [routerLink]="['/home']">
+                <a href="javascript:;" [routerLink]="['/']">
                     <i class="headericons material-icons">book</i>Mangas</a>
             </li>
             <ul class="submenu" *ngIf="false">
@@ -50,7 +50,7 @@
             </ul>
             <li class="list" *ngIf="userService.isUserLoad()">
                 <i class="headericons material-icons">library_books</i>
-                <a href="javascript:;" [routerLink]="['/home/favorite']">Librairie</a>
+                <a href="javascript:;" [routerLink]="['/favorite']">Librairie</a>
             </li>
             <li class="list">
                 <i class="headericons material-icons">search</i>
@@ -58,7 +58,7 @@
             </li>
             <li class="list">
                 <i class="headericons material-icons">file_download</i>
-                <a href="javascript:;" [routerLink]="['/home/download']">Téléchargement</a>
+                <a href="javascript:;" [routerLink]="['/download']">Téléchargement</a>
             </li>
             <li class="list">
                 <i class="headericons material-icons">settings</i>

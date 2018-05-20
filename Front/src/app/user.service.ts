@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment'
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
 		var id = localStorage.getItem('userId');
 		if (id != null && id != 'null') {
 			this.userId = id;
-			this.http.get('http://127.0.0.1:8080/user/' + this.userId).subscribe((user) => {
+			this.http.get(environment.serverIp + 'user/' + this.userId).subscribe((user) => {
 				this.user = user;
 				callback();
 			});
@@ -39,7 +40,7 @@ export class UserService {
 
 	public logIn(userInfo, callback) {
 		var th = this;
-		this.http.post('http://127.0.0.1:8080/login/', userInfo).subscribe((id: string) => {
+		this.http.post(environment.serverIp + 'login/', userInfo).subscribe((id: string) => {
 			if (id) {
 				localStorage.setItem('userId', id);
 				this.loadUser(() => {
@@ -52,7 +53,7 @@ export class UserService {
 
 	public signIn(userInfo, callback) {
 		var th = this;
-		this.http.post('http://127.0.0.1:8080/signin/', userInfo).subscribe((id: string) => {
+		this.http.post(environment.serverIp + 'signin/', userInfo).subscribe((id: string) => {
 			if (id) {
 				localStorage.setItem('userId', id);
 				this.loadUser(() => {
