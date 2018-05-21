@@ -1,0 +1,9 @@
+a{
+    color: white;
+    margin-bottom: 15px;
+}
+
+.nom{
+    display: inline-block;
+    text-align: right;
+}
