@@ -1,0 +1,97 @@
+.content {
+    height:80vh;
+  }
+
+.posters-list[_ngcontent-c2] {
+    font-size: 0;
+    letter-spacing: -1px;
+    text-align: left;
+    margin-top: 10px;
+}
+.list-inline[_ngcontent-c2] {
+    margin-left: -5px;
+}
+.list-inline[_ngcontent-c2], .list-unstyled[_ngcontent-c2] {
+    padding-left: 0;
+    list-style: none;
+}
+ol[_ngcontent-c2], ul[_ngcontent-c2] {
+    margin-bottom: 10px;
+}
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] {
+    padding: 12px 17px;
+    width: 187px;
+    overflow: hidden;
+    vertical-align: top;
+}
+.list-inline[_ngcontent-c2] > li[_ngcontent-c2] {
+    display: inline-block;
+}
+[_ngcontent-c2], [_ngcontent-c2]::after, [_ngcontent-c2]::before {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] .image-crop[_ngcontent-c2] {
+    width: 155px;
+    height: 222px;
+    overflow: hidden;
+    border-radius: 2px;
+    box-shadow: 0 0 2px #777;
+    position: relative;
+}
+
+
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] .image-crop[_ngcontent-c2] img[_ngcontent-c2] {
+    width: 100%;
+}
+img[_ngcontent-c2] {
+    border: 0;
+    vertical-align: middle;
+}
+
+
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] .poster-details[_ngcontent-c2] {
+    letter-spacing: 0;
+    text-align: left;
+}
+
+
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] .poster-details[_ngcontent-c2] h2[_ngcontent-c2] {
+    margin: 7px 0 2px;
+    font-size: 14px;
+    color: #444;
+    font-family: ProximaNovaSB;
+    height: 15px;
+    overflow: hidden;
+    word-break: break-all;
+}
+
+
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] .poster-details[_ngcontent-c2] h2[_ngcontent-c2] span[_ngcontent-c2] {
+    font-family: ProximaNova;
+    font-size: 12px;
+    color: #999;
+}
+
+
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] .poster-details[_ngcontent-c2] .secondary-link[_ngcontent-c2] {
+    color: #666;
+    font-family: ProximaNova;
+    font-size: 12px;
+    display: inline;
+}
+.posters-list[_ngcontent-c2] > li[_ngcontent-c2] .poster-details[_ngcontent-c2] a[_ngcontent-c2] {
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+a[_ngcontent-c2] {
+    color: #cbb123;
+}
+a[_ngcontent-c2] {
+    text-decoration: none;
+}
+a[_ngcontent-c2] {
+    background-color: transparent;
+}

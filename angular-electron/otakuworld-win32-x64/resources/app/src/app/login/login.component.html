@@ -1,0 +1,10 @@
+<div>
+  <label>Username</label>
+  <input type="text" [(ngModel)]="loginInfos.username">
+  <br/>
+  <label>Mot de passe</label>
+  <input type="password" [(ngModel)]="loginInfos.password">
+  <br/>
+  <input type="button" value="Se connecter" (click)="logIn()">
+  <input type="button" value="S'inscrire" (click)="signIn()">
+</div>

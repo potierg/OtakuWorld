@@ -1,0 +1,22 @@
+<section class="download" >
+    <div class="play">
+        <i class="material-icons playbutton" *ngIf="!downloadService.downloading" (click)="startDownload()">
+            play_arrow
+        </i>
+        <i class="material-icons playbutton" *ngIf="downloadService.downloading" (click)="stopDownload()">
+            stop
+        </i>
+    </div>
+</section>
+
+
+<section class="download" *ngFor="let dl of downloadService.getDownloadList()">
+    <div>
+        <img class="picture" *ngIf="dl.cover" [src]="dl.cover">
+        <img class="picture" *ngIf="!dl.cover" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
+    </div>
+    <div class="onepiece">
+        <h1>{{dl.nom}}</h1>
+        <progress value="80%" max="100"></progress>
+    </div>
+</section>

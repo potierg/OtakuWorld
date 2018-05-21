@@ -1,0 +1,49 @@
+
+    <div class="manga" *ngIf="!onLoad">
+        <a href="javascript:;" (click)="back()"><p style="margin-left:15px; margin-top:-15px; color:white; font-weight:bold; font-size:30px">
+                Retour</p></a>
+        <div class="header">
+            <h1>{{manga.Nom}}</h1>
+            <i class="imgmenu spacemenu material-icons">file_download</i>
+            <i class="imgmenu material-icons">star_border</i>
+        </div>
+        <div class="mangadescription">
+            <img *ngIf="manga.Cover.length > 0" class="imgmanga" [src]="manga.Cover[0].img">
+            <img *ngIf="manga.Cover.length == 0" class="imgmanga" src="https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg">
+            <div class="mangainfo">
+                <div>
+                    <p class="info">Auteur : {{manga.Auteur[0]}}</p>
+                    <p class="info">Genre : {{manga.Genre[0]}}</p>
+                    <p class="info">Nom Alternatif : {{manga['Nom Alternatif'][0]}}</p>
+                    <p class="info">Statut : {{manga.Statut}}</p>
+                    <p class="info">Année : {{manga['Sortie Initial']}}</p>
+                    <p class="info">Dernier Chapitre : {{manga.data[0].data.last}}</p>
+                    <p class="info">Synospis : </p>
+                </div>
+                <div class="synospis">
+                    <p>{{manga.Synopsis.FR}}</p>
+                </div>
+            </div>
+        </div>
+        <table class="blueTable">
+            <thead>
+                <tr>
+                    <th>Site</th>
+                    <th>Langue</th>
+                    <th>Derniers Chapitres</th>
+                    <th>Voir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of manga.data">
+                    <td>{{data.site.domain}}</td>
+                    <td>{{data.site.langue}}</td>
+                    <td>{{data.data.last}}</td>
+                    <td><a (click)="viewChapters(data.data.scanId)" href="javascript:;">Voir</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+    <div *ngIf="onLoad">
+        LOADING...
+    </div>

@@ -1,0 +1,13 @@
+<div>
+    <label>Nom</label>
+    <input type="text" [(ngModel)]="userInfos.nom">
+    <br/>
+    <label>Username</label>
+    <input type="text" [(ngModel)]="userInfos.username">
+    <br/>
+    <label>Mot de passe</label>
+    <input type="password" [(ngModel)]="userInfos.password">
+    <br/>
+    <input type="button" value="S'inscrire" (click)="signIn()">
+    <input type="button" value="Se connecter" (click)="logIn()">
+  </div>
