@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
+import { UserService } from './user.service';
 
 @Injectable()
 export class DownloadService {
@@ -8,14 +9,14 @@ export class DownloadService {
 	private loadDone = false;
 	public downloading = false;
 	
-	constructor(private http: HttpClient) { }
+	constructor(private http: HttpClient, private user: UserService) { }
 
 	public isListLoad() {
 		return this.loadDone;
 	}
 
 	public loadDownloadsByUserId() {
-		return this.http.get(environment.serverIp + 'downloads/' + 666);
+		return this.http.get(environment.serverIp + 'downloads/' + this.user.getUserId());
 	}
 
 	public setList(listDownload) {
@@ -43,26 +44,21 @@ export class DownloadService {
 		this.listDownload.push(obj);
 	}
 
-	public async startDownload() {
-		this.downloading = true;
-		for (var keyDl in this.listDownload) {
-			var listPages = [];
-
-			console.log(this.listDownload[keyDl]);
-
-			while (this.listDownload[keyDl].scans.length > 0) {
-				console.log(this.listDownload[keyDl].scans[0]);
-				this.listDownload[keyDl].scans = this.listDownload[keyDl].scans.slice(1);
-			}
-
-			return;
-
-		}
-		this.downloading = false;
-
+	public initDownload(id) {
+		return this.http.post('http://127.0.0.1:4242' + '/setList', { list: { scans: this.listDownload[0].scans, size: this.listDownload[0].scans.length, done: 0 } } );
 	}
 
-	public stopDownload() {
+	public startDownload(id) {
+		this.downloading = true;
+		return this.http.get('http://127.0.0.1:4242' + '/start/' + id);
+	}
+
+	public stopDownload(id) {
 		this.downloading = false;
+		return this.http.get('http://127.0.0.1:4242' + '/stop/' + id);
+	}
+
+	public getStatusDownload(id) {
+		return this.http.get('http://127.0.0.1:4242' + '/status/' + id);
 	}
 }

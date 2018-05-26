@@ -12,3 +12,7 @@ Front/package-lock.json
 FrontOLD/node_modules/
 FrontOLD/node_modules/*
 FrontOLD/package-lock.json
+
+Downloader/node_modules/
+Downloader/node_modules/*
+Downloader/package-lock.json

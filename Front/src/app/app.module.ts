@@ -29,6 +29,8 @@ import { LoginComponent } from './login/login.component';
 import { SigninComponent } from './signin/signin.component';
 import { SearchService } from './search.service';
 
+import { NgProgressModule } from 'ngx-progressbar';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +53,8 @@ import { SearchService } from './search.service';
     HttpClientModule,
     MatInputModule,
     FormsModule,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    NgProgressModule
   ],
   providers: [MangasService, ScanService, DownloadService, UserService, SearchService],
   bootstrap: [AppComponent]

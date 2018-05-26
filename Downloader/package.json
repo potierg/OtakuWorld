@@ -1,0 +1,16 @@
+{
+  "name": "otaku_world",
+  "version": "1.0.0",
+  "description": "Scan Downloader",
+  "author": "Guillaume POTIER",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "connect-timeout": "^1.9.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.1",
+    "request": "^2.83.0"
+  }
+}

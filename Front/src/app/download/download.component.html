@@ -17,6 +17,6 @@
     </div>
     <div class="onepiece">
         <h1>{{dl.nom}}</h1>
-        <progress value="80%" max="100"></progress>
+        <ng-progress [positionUsing]="'marginLeft'" [minimum]="0" [maximum]="1"></ng-progress>
     </div>
 </section>

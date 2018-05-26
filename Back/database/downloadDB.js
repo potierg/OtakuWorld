@@ -14,7 +14,7 @@ module.exports = class DownloadDB extends MainDB {
             callback();
             return ;
         }
-        return callback(await this.find({'userId': userId}));
+        return callback(await this.find({'userId': new mongoId.ObjectId(userId)}));
     }
 
     async insertDownload(userId, mangaId, scans, callback) {
