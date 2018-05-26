@@ -1,14 +1,18 @@
 {
-  "name": "otakuword",
+  "name": "otakuworld",
   "version": "0.0.0",
   "license": "MIT",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "electron": "electron .",
+    "electron-build": "ng build --dev && electron .",
+    "electron-package-win": "ng build --prod && electron-packager . --no-prune --ignore=/node_modules --ignore=/e2e --ignore=/src --overwrite"
   },
   "private": true,
   "dependencies": {
@@ -39,6 +43,8 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.106",
     "codelyzer": "^4.3.0",
+    "electron": "^2.0.1",
+    "electron-packager": "^12.1.0",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^2.0.2",

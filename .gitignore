@@ -1,8 +1,14 @@
 Back/node_modules/
 Back/node_modules/*
+
 Parsers/node_modules/
 Parsers/node_modules/*
 Parsers/package-lock.json
+
 Front/node_modules/
 Front/node_modules/*
 Front/package-lock.json
+
+FrontOLD/node_modules/
+FrontOLD/node_modules/*
+FrontOLD/package-lock.json
