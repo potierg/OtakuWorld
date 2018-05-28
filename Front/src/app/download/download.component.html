@@ -4,7 +4,7 @@
             play_arrow
         </i>
         <i class="material-icons playbutton" *ngIf="downloadService.downloading" (click)="stopDownload()">
-            stop
+            pause
         </i>
     </div>
 </section>
@@ -17,6 +17,6 @@
     </div>
     <div class="onepiece">
         <h1>{{dl.nom}}</h1>
-        <ng-progress [positionUsing]="'marginLeft'" [minimum]="0" [maximum]="1"></ng-progress>
+        <progress value="{{dl.percent ? dl.percent : 0}}" max="100">{{dl.percent ? dl.percent : 0}} %</progress>
     </div>
 </section>

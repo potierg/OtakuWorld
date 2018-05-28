@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DownloadService } from '../download.service';
 import { NgProgress } from 'ngx-progressbar';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
 	selector: 'app-download',
@@ -25,12 +26,17 @@ export class DownloadComponent implements OnInit {
 				console.log(Math.floor(resp.p));
 				th.downloadService.getDownloadList()[0].percent = Math.floor(resp.p);
 				th.ngProgress.set(Math.floor(resp.p) / 100);
-				setTimeout(th.requestState(id), 100);
+
+				Observable.interval(100)
+				.take(1).subscribe(i => { 
+					th.requestState(id)
+				});
 			}
 			else if (resp.p == -1) {
 				console.log("END");
 				th.ngProgress.done();
 				th.downloadService.getDownloadList().splice(0, 1);
+				return th.startDownload();
 			}
 			else 
 				console.log("STOP");
@@ -39,7 +45,14 @@ export class DownloadComponent implements OnInit {
 
 	startDownload() {
 		var th = this;
+
+		if (th.downloadService.getDownloadList().length == 0) {
+			th.downloadService.downloading = false;
+			return ;
+		}
+
 		console.log(th.downloadService.getDownloadList()[0]);
+
 		if (!th.downloadService.getDownloadList()[0].id) {
 			th.ngProgress.start();
 			th.downloadService.initDownload(0).subscribe(function (id :any) {

@@ -7,10 +7,12 @@ export class UserService {
 
 	private userId = null;
 	private user = null;
+	private path = null;
 
 	constructor(private http: HttpClient) { }
 
 	public loadUser(callback) {
+		this.path = localStorage.getItem('userPath');
 		var id = localStorage.getItem('userId');
 		if (id != null && id != 'null') {
 			this.userId = id;
@@ -44,7 +46,7 @@ export class UserService {
 			if (id) {
 				localStorage.setItem('userId', id);
 				this.loadUser(() => {
-					return callback(true);					
+					return callback(true);
 				});
 			}
 			callback(false);
@@ -57,7 +59,7 @@ export class UserService {
 			if (id) {
 				localStorage.setItem('userId', id);
 				this.loadUser(() => {
-					return callback(true);					
+					return callback(true);
 				});
 			}
 			callback(false);
@@ -68,5 +70,14 @@ export class UserService {
 		localStorage.setItem('userId', null);
 		this.user = null;
 		this.userId = null;
+	}
+
+	public getPath() {
+		return this.path;
+	}
+
+	public setPath(path) {
+		this.path = path;
+		localStorage.setItem('userPath', path);
 	}
 }
