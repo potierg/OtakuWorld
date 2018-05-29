@@ -35,7 +35,11 @@
     "ngx-pagination-bootstrap": "^1.5.0",
     "ngx-progressbar": "^2.1.1",
     "rxjs": "^5.5.10",
-    "zone.js": "^0.8.19"
+    "zone.js": "^0.8.19",
+    "connect-timeout": "^1.9.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.1",
+    "request": "^2.83.0"
   },
   "devDependencies": {
     "@angular/cli": "~1.7.3",

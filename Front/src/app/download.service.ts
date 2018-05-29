@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
 import { UserService } from './user.service';
 
+const PORT = '4521';
+
 @Injectable()
 export class DownloadService {
 	private listDownload = [];
@@ -45,20 +47,20 @@ export class DownloadService {
 	}
 
 	public initDownload(id) {
-		return this.http.post('http://127.0.0.1:4242' + '/setList', { list: { scans: this.listDownload[0].scans, size: this.listDownload[0].scans.length, done: 0 } } );
+		return this.http.post('http://127.0.0.1:' + PORT + '/setList', { list: { scans: this.listDownload[0].scans, size: this.listDownload[0].scans.length, done: 0 } } );
 	}
 
 	public startDownload(id) {
 		this.downloading = true;
-		return this.http.get('http://127.0.0.1:4242' + '/start/' + id);
+		return this.http.get('http://127.0.0.1:' + PORT + '/start/' + id);
 	}
 
 	public stopDownload(id) {
 		this.downloading = false;
-		return this.http.get('http://127.0.0.1:4242' + '/stop/' + id);
+		return this.http.get('http://127.0.0.1:' + PORT + '/stop/' + id);
 	}
 
 	public getStatusDownload(id) {
-		return this.http.get('http://127.0.0.1:4242' + '/status/' + id);
+		return this.http.get('http://127.0.0.1:' + PORT + '/status/' + id);
 	}
 }

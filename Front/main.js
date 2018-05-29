@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron')
+var server = require("./server/server");
 
 let win;
 
