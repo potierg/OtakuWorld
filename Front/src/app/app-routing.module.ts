@@ -8,6 +8,7 @@ import { DownloadComponent } from './download/download.component';
 import { FavoriteComponent } from './favorite/favorite.component';
 import { LoginComponent } from './login/login.component';
 import { SigninComponent } from './signin/signin.component';
+import { ParametersComponent } from './parameters/parameters.component';
 
 const routes: Routes = [
 	{
@@ -18,7 +19,8 @@ const routes: Routes = [
 			{path: "download", component: DownloadComponent},
 			{path: "favorite", component: FavoriteComponent},
 			{path: "login", component: LoginComponent},
-			{path: "signin", component: SigninComponent}
+			{path: "signin", component: SigninComponent},
+			{path: "params", component: ParametersComponent}
 		]
 	}
 ];

@@ -28,8 +28,7 @@ import { FavoriteComponent } from './favorite/favorite.component';
 import { LoginComponent } from './login/login.component';
 import { SigninComponent } from './signin/signin.component';
 import { SearchService } from './search.service';
-
-import { NgProgressModule } from 'ngx-progressbar';
+import { ParametersComponent } from './parameters/parameters.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +44,7 @@ import { NgProgressModule } from 'ngx-progressbar';
     FavoriteComponent,
     LoginComponent,
     SigninComponent,
+    ParametersComponent
   ],
   imports: [
     InfiniteScrollModule,
@@ -53,8 +53,7 @@ import { NgProgressModule } from 'ngx-progressbar';
     HttpClientModule,
     MatInputModule,
     FormsModule,
-    NgbModule.forRoot(),
-    NgProgressModule
+    NgbModule.forRoot()
   ],
   providers: [MangasService, ScanService, DownloadService, UserService, SearchService],
   bootstrap: [AppComponent]
