@@ -47,7 +47,7 @@ export class DownloadService {
 	}
 
 	public initDownload(id) {
-		return this.http.post('http://127.0.0.1:' + PORT + '/setList', { list: { scans: this.listDownload[0].scans, size: this.listDownload[0].scans.length, done: 0 } } );
+		return this.http.post('http://127.0.0.1:' + PORT + '/setList', { list: { scans: this.listDownload[0].scans, size: this.listDownload[0].scans.length, done: 0 }, path: this.user.getPath(), nomManga: this.listDownload[0].nom } );
 	}
 
 	public startDownload(id) {

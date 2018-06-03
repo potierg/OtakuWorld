@@ -1,4 +1,5 @@
 'use strict';
+var fs = require('fs'), request = require('request');
 
 module.exports = class Manga {
 
@@ -6,9 +7,9 @@ module.exports = class Manga {
         this.downloadList = [];
     }
 
-    addDownload(list) {
+    addDownload(list, path, nomManga) {
         var id = Date.now();
-        this.downloadList.push({id: id, scans: list.scans, status: false, size: list.size, done: list.done});
+        this.downloadList.push({id: id, scans: list.scans, status: false, size: list.size, done: list.done, path: path, nomManga: nomManga});
         return id;
     }
 
@@ -39,16 +40,38 @@ module.exports = class Manga {
         return percent;
     }
 
+    download(uri, dir, filename, callback){
+
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
+
+        request.head(uri, function(err, res, body){      
+          request(uri).pipe(fs.createWriteStream(dir + '\\' + filename)).on('close', callback);
+        });
+      };
+
     downloadFile(id, i) {
         var th = this;
-        if (this.getById(id) && i < this.getById(id).scans.length && this.getById(id).status) {
-            console.log("Download", this.getById(id).scans[i]);
-            this.getById(id).done++;
-            setTimeout(function() {
-                th.downloadFile(id, i + 1);
-            }, 100);
-        } else if (this.getById(id)){
-            if (this.getById(id).status = false)
+        var download = this.getById(id);
+        if (download && i < download.scans.length && download.status) {
+
+            download.nomManga = download.nomManga.replace('/', '-');
+            if (!fs.existsSync(download.path + download.nomManga)){
+                fs.mkdirSync(download.path + download.nomManga);
+            }    
+
+            download.scans[i].nomDir = download.path + download.nomManga + '\\' + download.scans[i].nomDir;
+            // Download File
+
+            th.download(download.scans[i].link, download.scans[i].nomDir, download.scans[i].nomFile, () => {
+                th.getById(id).done++;
+                setTimeout(function() {
+                    th.downloadFile(id, i + 1);
+                }, 100);    
+            });
+        } else if (download){
+            if (download.status == false)
                 console.log("stop", id);
             else
                 console.log("end", id);

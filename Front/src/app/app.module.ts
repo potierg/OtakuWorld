@@ -29,6 +29,7 @@ import { LoginComponent } from './login/login.component';
 import { SigninComponent } from './signin/signin.component';
 import { SearchService } from './search.service';
 import { ParametersComponent } from './parameters/parameters.component';
+import { ExplorerComponent } from './explorer/explorer.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { ParametersComponent } from './parameters/parameters.component';
     FavoriteComponent,
     LoginComponent,
     SigninComponent,
-    ParametersComponent
+    ParametersComponent,
+    ExplorerComponent
   ],
   imports: [
     InfiniteScrollModule,

@@ -5,6 +5,7 @@ const PORT = 4521;
 const HOST = '0.0.0.0';
 
 const express = require('express');
+const fs = require('fs');
 const app = express();
 const cors = require('cors')
 module.exports = app;
@@ -40,32 +41,73 @@ function getHeader(res) {
     return res;
 }
 
+
+// Folder Explorer
+
+var dir = process.cwd();
+app.use(express.static(dir)); //current working directory
+app.use(express.static(__dirname)); //module directory
+
+
+app.post('/files', function (req, res) {
+    var currentDir = req.body.path ? req.body.path : dir + '\\';
+
+    var data = {path: currentDir, folders: []};
+    var l = currentDir.split("\\").length - 1;
+
+    if (l > 1) {
+        var back = currentDir.substring(0, currentDir.lastIndexOf('\\'));
+        back = back.substring(0, back.lastIndexOf('\\') + 1);
+        data.folders.push({ name: '.. (Back)', path: back });
+    }
+
+    fs.readdir(currentDir, function (err, files) {
+        if (err) {
+            throw err;
+        }
+
+        files.forEach(function (file) {
+            try {
+                var path = currentDir + file + '\\';
+                var isDirectory = fs.statSync(path).isDirectory();
+                if (isDirectory) {
+                    data.folders.push({ name: file, path: path });
+                }
+            } catch (e) {
+            }
+        });
+        res.end(JSON.stringify(data));
+    });
+})
+
+// Downloader
+
+
 app.post('/setList', (req, res) => {
     res = getHeader(res);
-    var id = downloader.addDownload(req.body.list);
-    console.log(id);
-    res.end(JSON.stringify({id: id}));
+    var id = downloader.addDownload(req.body.list, req.body.path, req.body.nomManga);
+    res.end(JSON.stringify({ id: id }));
 });
 
 app.get('/start/:id', (req, res) => {
     res = getHeader(res);
     var id = req.params.id;
     downloader.startDownload(parseInt(id));
-    res.end(JSON.stringify({state: 1}));
+    res.end(JSON.stringify({ state: 1 }));
 });
 
 app.get('/stop/:id', (req, res) => {
     res = getHeader(res);
     var id = req.params.id;
     downloader.stopDownload(id);
-    res.end(JSON.stringify({state: 1}));
+    res.end(JSON.stringify({ state: 1 }));
 });
 
 app.get('/status/:id', (req, res) => {
     res = getHeader(res);
     var id = req.params.id;
     var percent = downloader.getPercentDoneById(id);
-    res.end(JSON.stringify({p: percent}));
+    res.end(JSON.stringify({ p: percent }));
 });
 
 app.listen(PORT, HOST);
