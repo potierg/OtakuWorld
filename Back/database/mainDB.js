@@ -55,7 +55,7 @@ module.exports = class MainDB {
         var th = this;
         return new Promise(function (resolve, reject) {
             th.getCollection().insertOne(datas, function (err, docs) {
-                resolve(docs);
+                resolve(docs.ops);
             });
         });
     }
@@ -68,4 +68,14 @@ module.exports = class MainDB {
             });
         });
     }
+
+    deleteOne(match) {
+        var th = this;
+        return new Promise(function (resolve, reject) {
+            th.getCollection().deleteOne(match, function (err, docs) {
+                resolve(docs);
+            });
+        });
+    }
+
 }

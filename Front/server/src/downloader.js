@@ -13,6 +13,14 @@ module.exports = class Manga {
         return id;
     }
 
+    addDownloadWithId(scans, idDl) {
+        var array = this.getById(idDl);
+        var nArrayConcat = array.scans.concat(scans);
+        array.scans = nArrayConcat;
+        array.size = nArrayConcat.length;
+        this.setById(idDl, array);
+    }
+
     getById(id) {
         for (var i = 0; i < this.downloadList.length; i++) {
             if (this.downloadList[i].id == id)
@@ -20,6 +28,14 @@ module.exports = class Manga {
         }
         return null;
     }
+
+    setById(id, array) {
+        for (var i = 0; i < this.downloadList.length; i++) {
+            if (this.downloadList[i].id == id)
+                this.downloadList[i] = array;
+        }
+    }
+
 
     deleteById(id) {
         for (var i = 0; i < this.downloadList.length; i++) {
@@ -68,7 +84,7 @@ module.exports = class Manga {
                 th.getById(id).done++;
                 setTimeout(function() {
                     th.downloadFile(id, i + 1);
-                }, 100);    
+                }, 100);
             });
         } else if (download){
             if (download.status == false)

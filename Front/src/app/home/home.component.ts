@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit {
 
 	private searchStr = '';
 	private showMenu = true;
+	private route  = "";
 
 	constructor(private mangasService: MangasService,
 		private downloadService: DownloadService,
@@ -33,6 +34,7 @@ export class HomeComponent implements OnInit {
 				});
 			};	
 		});
+		this.downloadService.processLoop();
 	}
 
 	public loadAllMangas(page) {
@@ -47,7 +49,7 @@ export class HomeComponent implements OnInit {
 			this.mangasService.saveInMangaslist(datas['mangas']);
 
 			setTimeout( () => {
-				this.loadAllMangas(page + 1);
+				//this.loadAllMangas(page + 1);
 			 }, 500 );
 		});
 	}

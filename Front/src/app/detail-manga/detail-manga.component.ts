@@ -87,15 +87,11 @@ export class DetailMangaComponent implements OnInit {
 	}
 
 	downloadAllMangaActive() {
-		this.downloadService.addToDownload(this.manga.data[this.activeTab].scan, this.manga._id, this.manga.data[this.activeTab].data.scanId).subscribe(res => {
-			this.downloadService.addToDownloadList(res);
-		});
+		this.downloadService.addToDownload(this.manga.data[this.activeTab].scan, this.manga._id, this.manga.data[this.activeTab].data.scanId);
 	}
 
 	downloadSelectionActive() {
-		this.downloadService.addToDownload(this.manga.data[this.activeTab].scan, this.manga._id, this.manga.data[this.activeTab].data.scanId, true).subscribe(res => {
-			this.downloadService.addToDownloadList(res);
-		});
+		this.downloadService.addToDownload(this.manga.data[this.activeTab].scan, this.manga._id, this.manga.data[this.activeTab].data.scanId, true);
 	}
 
 	setActiveTab(id) {

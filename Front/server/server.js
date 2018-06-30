@@ -89,6 +89,14 @@ app.post('/setList', (req, res) => {
     res.end(JSON.stringify({ id: id }));
 });
 
+app.post('/setListWithId/:id', (req, res) => {
+
+    var idDL = req.params.id;
+    res = getHeader(res);
+    downloader.addDownloadWithId(req.body.list.scans, idDL);
+    res.end(JSON.stringify({ id: idDL }));
+});
+
 app.get('/start/:id', (req, res) => {
     res = getHeader(res);
     var id = req.params.id;

@@ -24,4 +24,8 @@ module.exports = class DownloadDB extends MainDB {
         }
         return callback(await this.insertOne({mangaId:mangaId, userId:userId, scans:scans}));
     }
+
+    async deleteDownload(userId, dlId, callback) {
+        return callback(await this.deleteOne({'_id': new mongoId.ObjectId(dlId), 'userId': userId}));
+    }
 }

@@ -8,11 +8,13 @@
             <i class="menuburger headericons material-icons" style="font-size:40px" (click)="showMenu = !showMenu">menu</i>
         </a>
         <!--<img class="logo" src="statics/Home_desktop/menu.png">-->
-        <div class="search">
-            <form class="searchbar" method="get" action="search.php">
-                <i class="headericons material-icons">search</i>
-                <input mdInput name="search" id="searcharea" placeholder="Rechercher" [(ngModel)]="searchStr" (ngModelChange)="searchChange()">
-            </form>
+        <div *ngIf="router.url == '/'" class="search">
+            <i class="headericons material-icons">search</i>
+            <input mdInput name="search" id="searcharea" placeholder="Rechercher" [(ngModel)]="searchStr" (ngModelChange)="searchChange()">
+        </div>
+        <div class="play">
+            <i class="material-icons playbutton" *ngIf="!downloadService.downloading" (click)="downloadService.startDownloadList(0)">play_arrow</i>
+            <i class="material-icons playbutton" *ngIf="downloadService.downloading" (click)="downloadService.stopDownloadList()">pause</i>
         </div>
         <div class="icone">
             <span>

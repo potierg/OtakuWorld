@@ -150,7 +150,6 @@ app.get('/manga/:id/chapters/:tome/:chapter/scans', (req, res) => {
 
 // Connected
 
-
 app.get('/downloads/:userId', (req, res) => {
     res = getHeader(res);
     var userId = req.params.userId;
@@ -159,15 +158,14 @@ app.get('/downloads/:userId', (req, res) => {
         var dls = [];
         for (var keyDownload in listDownloads) {
             var manga = await mangaModel.getByIdAsync(listDownloads[keyDownload].mangaId);
-            dls.push({nom: manga.Nom, cover: manga.Cover[0] ? manga.Cover[0].img : null, scans:listDownloads[keyDownload].scans});
+            dls.push({_id: listDownloads[keyDownload]._id, nom: manga.Nom, cover: manga.Cover[0] ? manga.Cover[0].img : null, scans:listDownloads[keyDownload].scans});
         }
         callback(dls);
     }
     
     downloadModel.getByUserId(userId, function(listDownloads) {
-
         getListDownload(listDownloads, function(dls) {
-            res.end(JSON.stringify(dls));    
+            res.end(JSON.stringify(dls));
         });
     });
 });
@@ -177,16 +175,26 @@ app.post('/download/:userId', (req, res) => {
     var userId = req.params.userId;
 
     scanModel.getScansByNumeros(req.body.datas.scanId, req.body.datas.scans, function (scans) {
-        downloadModel.insertDownload(userId, req.body.datas.mangaId, scans, function () {
-        });
-        mangaModel.getById(req.body.datas.mangaId, function(manga) {
-            res.end(JSON.stringify({nom: manga.Nom, cover: manga.Cover[0] ? manga.Cover[0].img : null, scans:scans}));            
+        downloadModel.insertDownload(userId, req.body.datas.mangaId, scans, function (dl) {
+            mangaModel.getById(req.body.datas.mangaId, function(manga) {
+                res.end(JSON.stringify({_id: dl[0]._id, nom: manga.Nom, cover: manga.Cover[0] ? manga.Cover[0].img : null, scans:scans}));            
+            });
         });
     });
 
     return ;
 });
 
+app.delete('/download/:userId/:dlId', (req, res) => {
+    res = getHeader(res);
+    var userId = req.params.userId;
+    var dlId = req.params.dlId;
+
+    downloadModel.deleteDownload(userId, dlId, function() {
+        res.end(JSON.stringify({}));
+    });
+    return ;
+});
 
 app.get('/favorite/:userId/:mangaId', (req, res) => {
     res = getHeader(res);

@@ -155,3 +155,12 @@ a {
   bottom: 0;
   width: 100%;
 }
+
+.play {
+  align-self: center;
+  padding: 25px;
+}
+
+.playbutton{
+  font-size: 50px;
+}
